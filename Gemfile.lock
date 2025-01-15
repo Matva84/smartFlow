@@ -80,6 +80,9 @@ GEM
       securerandom (>= 0.3)
       tzinfo (~> 2.0, >= 2.0.5)
       uri (>= 0.13.1)
+    acts-as-taggable-on (12.0.0)
+      activerecord (>= 7.1, < 8.1)
+      zeitwerk (>= 2.4, < 3.0)
     addressable (2.8.7)
       public_suffix (>= 2.0.2, < 7.0)
     ast (2.4.2)
@@ -110,6 +113,11 @@ GEM
       rack-test (>= 0.6.3)
       regexp_parser (>= 1.5, < 3.0)
       xpath (~> 3.2)
+    cloudinary (2.2.0)
+      faraday (>= 2.0.1, < 3.0.0)
+      faraday-follow_redirects (~> 0.3.0)
+      faraday-multipart (~> 1.0, >= 1.0.4)
+      ostruct
     concurrent-ruby (1.3.4)
     connection_pool (2.5.0)
     crass (1.0.6)
@@ -133,6 +141,16 @@ GEM
     et-orbi (1.2.11)
       tzinfo
     execjs (2.10.0)
+    faraday (2.12.2)
+      faraday-net_http (>= 2.0, < 3.5)
+      json
+      logger
+    faraday-follow_redirects (0.3.0)
+      faraday (>= 1, < 3)
+    faraday-multipart (1.1.0)
+      multipart-post (~> 2.0)
+    faraday-net_http (3.4.0)
+      net-http (>= 0.5.0)
     ffi (1.17.1-aarch64-linux-gnu)
     ffi (1.17.1-aarch64-linux-musl)
     ffi (1.17.1-arm-linux-gnu)
@@ -188,6 +206,9 @@ GEM
     mini_mime (1.1.5)
     minitest (5.25.4)
     msgpack (1.7.5)
+    multipart-post (2.4.1)
+    net-http (0.6.0)
+      uri
     net-imap (0.5.5)
       date
       net-protocol
@@ -365,6 +386,12 @@ GEM
     stimulus-rails (1.3.4)
       railties (>= 6.0.0)
     stringio (3.1.2)
+    sync (0.5.0)
+    taskjuggler (3.8.1)
+      mail (~> 2.7, >= 2.7.1)
+      term-ansicolor (~> 1.7, >= 1.7.1)
+    term-ansicolor (1.11.2)
+      tins (~> 1.0)
     thor (1.3.2)
     thruster (0.1.10)
     thruster (0.1.10-aarch64-linux)
@@ -373,6 +400,9 @@ GEM
     thruster (0.1.10-x86_64-linux)
     tilt (2.6.0)
     timeout (0.4.3)
+    tins (1.38.0)
+      bigdecimal
+      sync
     turbo-rails (2.0.11)
       actionpack (>= 6.0.0)
       railties (>= 6.0.0)
@@ -412,11 +442,13 @@ PLATFORMS
   x86_64-linux-musl
 
 DEPENDENCIES
+  acts-as-taggable-on
   autoprefixer-rails
   bootsnap
   bootstrap (~> 5.2)
   brakeman
   capybara
+  cloudinary
   debug
   devise
   dotenv-rails
@@ -436,6 +468,7 @@ DEPENDENCIES
   solid_cache
   solid_queue
   stimulus-rails
+  taskjuggler
   thruster
   turbo-rails
   tzinfo-data
