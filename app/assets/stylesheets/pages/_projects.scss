@@ -1,0 +1,12 @@
+ul.employee-list {
+  list-style: none;
+  padding: 0;
+}
+
+ul.employee-list li {
+  margin-bottom: 10px;
+}
+
+ul.employee-list li input[type="checkbox"] {
+  margin-right: 10px;
+}

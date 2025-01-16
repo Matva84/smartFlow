@@ -1,0 +1,26 @@
+<h1>Liste des utilisateurs</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Email</th>
+      <th>Rôle</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @users.each do |user| %>
+      <tr>
+        <td><%= user.id %></td>
+        <td><%= user.email %></td>
+        <td><%= user.role %></td>
+        <td>
+          <%= link_to "Voir", user_path(user) %> |
+          <%= link_to "Modifier", edit_user_path(user) %> |
+          <%= link_to "Supprimer", user_path(user), method: :delete, data: { confirm: "Êtes-vous sûr ?" } %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

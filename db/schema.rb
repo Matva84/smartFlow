@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_01_14_210918) do
+ActiveRecord::Schema[8.0].define(version: 2025_01_15_214220) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -42,6 +42,69 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_14_210918) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "clients", force: :cascade do |t|
+    t.string "firstname"
+    t.string "lastname"
+    t.string "address"
+    t.string "phone"
+    t.string "email"
+    t.string "rib"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "employees", force: :cascade do |t|
+    t.string "firstname"
+    t.string "lastname"
+    t.string "address"
+    t.string "phone"
+    t.string "email"
+    t.string "group"
+    t.string "position"
+    t.float "hoursalary"
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_employees_on_user_id"
+  end
+
+  create_table "employees_projects", id: false, force: :cascade do |t|
+    t.bigint "project_id", null: false
+    t.bigint "employee_id", null: false
+  end
+
+  create_table "projects", force: :cascade do |t|
+    t.string "name"
+    t.text "description"
+    t.string "address"
+    t.float "latitude"
+    t.float "longitude"
+    t.date "start_at"
+    t.date "end_at"
+    t.date "initial_start_at"
+    t.date "initial_end_at"
+    t.float "totalbudget"
+    t.integer "progression"
+    t.float "human_cost"
+    t.float "material_cost"
+    t.float "customer_budget"
+    t.float "total_expenses"
+    t.bigint "client_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_id"], name: "index_projects_on_client_id"
+  end
+
+  create_table "quotes", force: :cascade do |t|
+    t.string "number"
+    t.string "status", default: "creation"
+    t.decimal "total"
+    t.bigint "project_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["project_id"], name: "index_quotes_on_project_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -57,4 +120,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_14_210918) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "employees", "users"
+  add_foreign_key "projects", "clients"
+  add_foreign_key "quotes", "projects"
 end

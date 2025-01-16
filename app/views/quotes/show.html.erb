@@ -1,0 +1,10 @@
+<h1>Détails du devis</h1>
+
+<p><strong>Numéro :</strong> <%= @quote.number %></p>
+<p><strong>Statut :</strong> <%= @quote.status %></p>
+<p><strong>Total :</strong> <%= number_to_currency(@quote.total, unit: "€") %></p>
+<p><strong>Projet associé :</strong> <%= link_to @quote.project.name, project_path(@quote.project) if @quote.project %></p>
+
+<%= link_to "Modifier", edit_quote_path(@quote), class: "btn btn-warning" %>
+<%= link_to "Retour à la liste", quotes_path, class: "btn btn-secondary" %>
+<%#= link_to "Supprimer", quote_path(@quote), method: :delete, data: { confirm: "Êtes-vous sûr ?" }, class: "btn btn-danger" %>

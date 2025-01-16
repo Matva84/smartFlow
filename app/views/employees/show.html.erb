@@ -1,0 +1,14 @@
+<h1>Détails de l'employé</h1>
+
+<p><strong>Prénom :</strong> <%= @employee.firstname %></p>
+<p><strong>Nom :</strong> <%= @employee.lastname %></p>
+<p><strong>Email :</strong> <%= @employee.email %></p>
+<p><strong>Téléphone :</strong> <%= @employee.phone %></p>
+<p><strong>Adresse :</strong> <%= @employee.address %></p>
+<p><strong>Groupe :</strong> <%= @employee.group %></p>
+<p><strong>Poste :</strong> <%= @employee.position %></p>
+<p><strong>Salaire horaire :</strong> <%= number_to_currency(@employee.hoursalary, unit: "€") %></p>
+
+<%= link_to "Modifier", edit_employee_path(@employee) %> |
+<%= link_to "Retour à la liste", employees_path %> |
+<%= button_to "Supprimer", employee_path(@employee), method: :delete, data: { confirm: "Êtes-vous sûr ?" } %>

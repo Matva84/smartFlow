@@ -1,0 +1,30 @@
+<h1>Liste des employés</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Prénom</th>
+      <th>Nom</th>
+      <th>Email</th>
+      <th>Poste</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @employees.each do |employee| %>
+      <tr>
+        <td><%= employee.firstname %></td>
+        <td><%= employee.lastname %></td>
+        <td><%= employee.email %></td>
+        <td><%= employee.position %></td>
+        <td>
+          <%= link_to "Voir", employee_path(employee) %>
+          <%#= link_to "Modifier", edit_employee_path(employee) %> 
+          <%#= link_to "Supprimer", employee_path(employee), data: { turbo_method: :delete, turbo_confirm: "Êtes-vous sûr ?" } %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<%= link_to "Ajouter un employé", new_employee_path %>

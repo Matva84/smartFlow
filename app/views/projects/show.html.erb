@@ -1,0 +1,25 @@
+<h1>Détails du projet</h1>
+
+<p><strong>Nom :</strong> <%= @project.name %></p>
+<p><strong>Description :</strong> <%= @project.description %></p>
+<p><strong>Adresse :</strong> <%= @project.address %></p>
+<p><strong>Date de début :</strong> <%= @project.start_at %></p>
+<p><strong>Date de fin :</strong> <%= @project.end_at %></p>
+
+<p><strong>Employés assignés :</strong></p>
+
+<%= form_with url: assign_employees_project_path(@project), method: :patch, local: true do |form| %>
+  <ul>
+    <% @employees.each do |employee| %>
+      <li>
+        <%= check_box_tag "employee_ids[]", employee.id, @project.employees.include?(employee) %>
+        <%= label_tag "employee_ids_#{employee.id}", "#{employee.firstname} #{employee.lastname}" %>
+      </li>
+    <% end %>
+  </ul>
+  <%= form.submit "Mettre à jour les employés" %>
+<% end %>
+
+<%= link_to "Modifier", edit_project_path(@project) %> |
+<%= link_to "Retour à la liste", projects_path %> |
+<%= button_to "Supprimer", project_path(@project), method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce projet ?" }, class: "btn btn-danger" %>

@@ -1,0 +1,7 @@
+<h1>Détails de l'utilisateur</h1>
+
+<p><strong>Email :</strong> <%= @user.email %></p>
+<p><strong>Rôle :</strong> <%= @user.role %></p>
+
+<%= link_to "Modifier", edit_user_path(@user) %> |
+<%= link_to "Retour à la liste", users_path %>

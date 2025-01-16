@@ -1,0 +1,32 @@
+<h1>Liste des projets</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Nom</th>
+      <th>Client</th>
+      <th>Date de début</th>
+      <th>Date de fin</th>
+      <th>Progression</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @projects.each do |project| %>
+      <tr>
+        <td><%= project.name %></td>
+        <td><%= project.client.firstname %> <%= project.client.lastname %></td>
+        <td><%= project.start_at %></td>
+        <td><%= project.end_at %></td>
+        <td><%= project.progression %> %</td>
+        <td>
+          <%= link_to "Voir", project_path(project) %>
+          <%#= link_to "Modifier", edit_project_path(project) %> 
+          <%#= link_to "Supprimer", project_path(project), method: :delete, data: { confirm: "Êtes-vous sûr ?" } %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<%= link_to "Créer un nouveau projet", new_project_path %>

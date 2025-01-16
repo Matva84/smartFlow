@@ -1,0 +1,46 @@
+<%= form_with(model: project, local: true, id: "project-form") do |form| %>
+
+  <div>
+    <%= form.label :name, "Nom" %>
+    <%= form.text_field :name %>
+  </div>
+
+  <div>
+    <%= form.label :description, "Description" %>
+    <%= form.text_area :description %>
+  </div>
+
+  <div>
+    <%= form.label :address, "Adresse" %>
+    <%= form.text_field :address %>
+  </div>
+
+  <div>
+    <%= form.label :start_at, "Date de début" %>
+    <%= form.date_field :start_at %>
+  </div>
+
+  <div>
+    <%= form.label :end_at, "Date de fin" %>
+    <%= form.date_field :end_at %>
+  </div>
+
+  <div>
+    <%= form.label :client_id, "Client" %>
+    <%= form.collection_select :client_id, @clients, :id, :firstname, prompt: "Choisir un client" %>
+  </div>
+
+  <div>
+    <h3>Employés assignés au projet</h3>
+    <ul>
+      <% @employees.each do |employee| %>
+        <li>
+         <%= check_box_tag "project[employee_ids][]", employee.id, @project.employees.include?(employee), id: "employee_#{employee.id}" %>
+          <%= label_tag "employee_#{employee.id}", "#{employee.firstname} #{employee.lastname}" %>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+
+  <%= form.submit "Enregistrer" %>
+<% end %>

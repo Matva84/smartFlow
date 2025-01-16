@@ -1,0 +1,21 @@
+<h1>Modifier l'utilisateur</h1>
+
+<%= form_with(model: @user, local: true) do |form| %>
+  <div>
+    <%= form.label :email, "Email" %>
+    <%= form.email_field :email %>
+  </div>
+  <div>
+    <%= form.label :role, "Rôle" %>
+    <%= form.select :role, ["user", "admin"], prompt: "Sélectionnez un rôle" %>
+  </div>
+  <div>
+    <%= form.label :password, "Mot de passe (facultatif)" %>
+    <%= form.password_field :password %>
+  </div>
+  <div>
+    <%= form.label :password_confirmation, "Confirmer le mot de passe" %>
+    <%= form.password_field :password_confirmation %>
+  </div>
+  <%= form.submit "Enregistrer les modifications" %>
+<% end %>

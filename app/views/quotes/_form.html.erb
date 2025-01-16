@@ -1,0 +1,18 @@
+<%= form_with(model: quote, local: true) do |form| %>
+  <div class="mb-3">
+    <%= form.label :number, "Numéro" %>
+    <%= form.text_field :number, class: "form-control" %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :status, "Statut" %>
+    <%= form.select :status, options_for_select(%w[Création Prêt\ à\ envoyer Envoyé Accepté Rejeté A\ modifier], quote.status || "Création"), {}, class: "form-control" %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :project_id, "Projet associé" %>
+    <%= form.collection_select :project_id, Project.all, :id, :name, { prompt: "Sélectionner un projet" }, class: "form-control" %>
+  </div>
+
+  <%= form.submit "Enregistrer", class: "btn btn-primary" %>
+<% end %>

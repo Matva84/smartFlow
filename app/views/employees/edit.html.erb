@@ -1,0 +1,47 @@
+<h1>Modifier l'employé</h1>
+
+<%= form_with(model: @employee, local: true) do |form| %>
+  <div>
+    <%= form.label :firstname, "Prénom" %>
+    <%= form.text_field :firstname, value: @employee.firstname %>
+  </div>
+
+  <div>
+    <%= form.label :lastname, "Nom" %>
+    <%= form.text_field :lastname, value: @employee.lastname %>
+  </div>
+
+  <div>
+    <%= form.label :address, "Adresse" %>
+    <%= form.text_field :address, value: @employee.address %>
+  </div>
+
+  <div>
+    <%= form.label :phone, "Téléphone" %>
+    <%= form.text_field :phone, value: @employee.phone %>
+  </div>
+
+  <div>
+    <%= form.label :email, "Email" %>
+    <%= form.email_field :email, value: @employee.email %>
+  </div>
+
+  <div>
+    <%= form.label :group, "Groupe" %>
+    <%= form.text_field :group, value: @employee.group %>
+  </div>
+
+  <div>
+    <%= form.label :position, "Poste" %>
+    <%= form.text_field :position, value: @employee.position %>
+  </div>
+
+  <div>
+    <%= form.label :hoursalary, "Salaire horaire" %>
+    <%= form.number_field :hoursalary, step: 0.01, value: @employee.hoursalary %>
+  </div>
+
+  <%= form.submit "Mettre à jour" %>
+<% end %>
+
+<%= link_to "Retour à la liste des employés", employees_path %>

@@ -1,0 +1,12 @@
+<h1>Détails du client</h1>
+
+<p><strong>Prénom :</strong> <%= @client.firstname %></p>
+<p><strong>Nom :</strong> <%= @client.lastname %></p>
+<p><strong>Email :</strong> <%= @client.email %></p>
+<p><strong>Téléphone :</strong> <%= @client.phone %></p>
+<p><strong>Adresse :</strong> <%= @client.address %></p>
+<p><strong>RIB :</strong> <%= @client.rib %></p>
+
+<%= link_to "Modifier", edit_client_path(@client) %> |
+<%= link_to "Retour à la liste", clients_path %> |
+<%= button_to "Supprimer", client_path(@client), method: :delete, data: { confirm: "Êtes-vous sûr ?" } %>

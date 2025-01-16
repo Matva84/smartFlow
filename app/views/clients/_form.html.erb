@@ -1,0 +1,33 @@
+<%= form_with(model: client, local: true) do |form| %>
+  <div>
+    <%= form.label :firstname, "Prénom" %>
+    <%= form.text_field :firstname %>
+  </div>
+
+  <div>
+    <%= form.label :lastname, "Nom" %>
+    <%= form.text_field :lastname %>
+  </div>
+
+  <div>
+    <%= form.label :address, "Adresse" %>
+    <%= form.text_field :address %>
+  </div>
+
+  <div>
+    <%= form.label :phone, "Téléphone" %>
+    <%= form.text_field :phone %>
+  </div>
+
+  <div>
+    <%= form.label :email, "Email" %>
+    <%= form.email_field :email %>
+  </div>
+
+  <div>
+    <%= form.label :rib, "RIB" %>
+    <%= form.text_field :rib %>
+  </div>
+
+  <%= form.submit %>
+<% end %>

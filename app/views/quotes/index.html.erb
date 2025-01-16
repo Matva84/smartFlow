@@ -1,0 +1,24 @@
+<table>
+  <thead>
+    <tr>
+      <th>Numéro</th>
+      <th>Statut</th>
+      <th>Total</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @quotes.each do |quote| %>
+      <tr>
+        <td><%= quote.number %></td>
+        <td><%= quote.status %></td>
+        <td><%= number_to_currency(quote.total, unit: "€") %></td>
+        <td>
+          <%= link_to "Voir", quote_path(quote), class: "btn btn-info" %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<%= link_to "Créer un nouveau devis", new_quote_path, class: "btn btn-primary" %>

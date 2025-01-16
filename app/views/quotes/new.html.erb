@@ -1,0 +1,33 @@
+<h1>Créer un nouveau devis</h1>
+
+<% if @quote.errors.any? %>
+  <div class="alert alert-danger">
+    <h4>Des erreurs ont empêché la création du devis :</h4>
+    <ul>
+      <% @quote.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<%= form_with(model: @quote, local: true) do |form| %>
+  <div class="mb-3">
+    <%= form.label :number, "Numéro du devis" %>
+    <%= form.text_field :number, value: @quote.number || "Numéro généré automatiquement", class: "form-control", readonly: true %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :project_id, "Projet associé" %>
+    <%= form.collection_select :project_id, Project.all, :id, :name, { prompt: "Sélectionner un projet" }, class: "form-control" %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :status, "Statut" %>
+    <%= form.select :status, options_for_select(%w[Création Prêt\ à\ envoyer Envoyé Accepté Rejeté A\ modifier], @quote.status || "Création"), {}, class: "form-control" %>
+  </div>
+
+  <%= form.submit "Enregistrer", class: "btn btn-primary" %>
+<% end %>
+
+<%= link_to "Retour à la liste", quotes_path, class: "btn btn-secondary" %>
