@@ -21,39 +21,160 @@
   </div>
 </div>
 
+<div class="formdiv fullwidth">
+  <%= form_with url: employees_path, method: :get, local: true, html: { id: "filter-form" } do %>
+    <div class="filter-container">
+      <%# Initialiser le décalage de mois à partir des paramètres ou à 0 si non défini %>
+  <% month_offset = params[:month_offset].to_i %>
+
+  <%# Calcul des dates de début et de fin en fonction du décalage %>
+  <% start_date = (Date.today.beginning_of_month >> month_offset) %>
+  <% end_date = (Date.today.end_of_month >> month_offset) %>
+
+      <div class="filter-container">
+        <%# Vérifier si des dates sont fournies via les paramètres, sinon utiliser le mois courant %>
+        <% start_date = params[:start_date].present? ? Date.parse(params[:start_date]) : Date.today.beginning_of_month %>
+        <% end_date = params[:end_date].present? ? Date.parse(params[:end_date]) : start_date.end_of_month %>
+
+        <label for="start_date">Du :</label>
+        <%= date_field_tag :start_date, start_date, id: "start_date_field", class: "date-input" %>
+
+        <label for="end_date">Au :</label>
+        <%= date_field_tag :end_date, end_date, id: "end_date_field", class: "date-input" %>
+
+        <%= submit_tag "Filtrer", class: "button" %>
+
+        <!-- Bouton pour le mois précédent : décale les dates actuellement affichées d'un mois en arrière -->
+        <%= link_to " << ", employees_path(start_date: (start_date << 1).beginning_of_month, end_date: (start_date << 1).end_of_month), class: "btn-filter ml60px" %>
+
+        <!-- Bouton pour le mois en cours : réinitialise les dates au mois courant -->
+        <%= link_to "Mois en cours", employees_path(start_date: Date.today.beginning_of_month, end_date: Date.today.end_of_month), class: "btn-filter" %>
+
+        <!-- Bouton pour le mois suivant : décale les dates actuellement affichées d'un mois en avant -->
+        <%= link_to " >> ", employees_path(start_date: (start_date >> 1).beginning_of_month, end_date: (start_date >> 1).end_of_month), class: "btn-filter" %>
+
+      </div>
+
+  <% end %>
+
+  <table>
+    <thead>
+    </thead>
+    <tbody>
+    <% start_date = params[:start_date].present? ? Date.parse(params[:start_date]) : Date.today %>
+    <% end_date = params[:end_date].present? ? Date.parse(params[:end_date]) : Date.today.end_of_month %>
+
+  <table class="tablePlanning">
+    <colgroup>
+      <col style="width: 200px;"> <!-- Première colonne plus large -->
+      <% (start_date..end_date).each do %>
+        <col style="width: 12px;"> <!-- Colonne pour le matin -->
+        <col style="width: 12px;"> <!-- Colonne pour l'après-midi -->
+      <% end %>
+    </colgroup>
+    <thead>
+      <tr>
+        <th class="tPlanning"><%= mois_francais(start_date) %></th>
+        <% (start_date..end_date).each do |date| %>
+          <th class="tPlanning" colspan="2" style="<%= 'color: red;' if date == Date.today %>">
+            <%= date.strftime("%d") %>
+          </th>
+        <% end %>
+      </tr>
+    </thead>
+    <tbody>
+      <% @employees.each do |employee| %>
+        <tr>
+          <td><%= link_to "#{employee.lastname} #{employee.firstname}", employee_path(employee), class:"FirstCol link-text" %></td>
+          <% (start_date..end_date).each do |date| %>
+            <%# event = employee.event_on(date) %>
+            <% event = employee.events.where(status: 'approuvé').find { |e| e.start_date <= date && e.end_date >= date } %>
+
+            <!-- Matin -->
+            <td style="
+              <% if employee.default_days_off&.include?(date.wday) %>
+                background-color: gray; color: white; font-weight: bold;
+              <% elsif event&.event_type == "arrêt_maladie" && event.part_of_day != 'afternoon' %>
+                background-color: var(--sick-color); color: white; font-weight: bold;
+              <% elsif event&.event_type == "télétravail" && event.part_of_day != 'afternoon' %>
+                background-color: var(--remote-color); color: white; font-weight: bold;
+              <% elsif event&.event_type == "congé" && event.part_of_day != 'afternoon' %>
+                background-color: var(--holiday-color); color: white; font-weight: bold;
+              <% else %>
+                background-color: white; color: black;
+              <% end %>
+            ">
+            </td>
+
+            <!-- Après-midi -->
+            <td style="
+              <% if employee.default_days_off&.include?(date.wday) %>
+                background-color: gray; color: white; font-weight: bold;
+              <% elsif event&.event_type == "arrêt_maladie" && event.part_of_day != 'morning' %>
+                background-color: var(--sick-color); color: white; font-weight: bold;
+              <% elsif event&.event_type == "télétravail" && event.part_of_day != 'morning' %>
+                background-color: var(--remote-color); color: white; font-weight: bold;
+              <% elsif event&.event_type == "congé" && event.part_of_day != 'morning' %>
+                background-color: var(--holiday-color); color: white; font-weight: bold;
+              <% else %>
+                background-color: white; color: black;
+              <% end %>
+            ">
+            </td>
+          <% end %>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+    </tbody>
+  </table>
+  </div>
+</div>
+
 <div class="flexinline">
   <div class="halfwidth formdiv">
 
     <div class="employee-filters">
       <div class="filter-buttons">
 
-        <%= link_to "Tous (#{@total_employees})", employees_path, class: "btn-filter btn-filter-all #{'active' if params[:group].blank? && params[:position].blank?}" %>
+        <%= link_to "Employés actuels (#{@total_employees})", employees_path, class: "btn-filter btn-filter-all #{'active' if params[:group].blank? && params[:position].blank?}" %>
 
-        <!-- Filtre par groupe -->
-        <h4>Filtrer par groupe :</h4>
-        <% if @group_counts.present? %>
-          <% @group_counts.each do |group, count| %>
-            <%= link_to "#{group} (#{count})", employees_path(group: group, position: params[:position]), class: "btn-filter #{'active' if params[:group] == group}" %>
-          <% end %>
-        <% else %>
-          <p>Aucun groupe disponible.</p>
-        <% end %>
-
-        <!-- Filtre par poste -->
-        <h4>Filtrer par poste :</h4>
-        <% if @position_counts.present? %>
-          <% @position_counts.each do |position, count| %>
-            <%= link_to "#{position} (#{count})", employees_path(position: position, group: params[:group]), class: "btn-filter #{'active' if params[:position] == position}" %>
-          <% end %>
-        <% else %>
-          <p>Aucun poste disponible.</p>
-        <% end %>
+        <div class="flexinline mt20">
+          <div>
+            <!-- Filtre par groupe -->
+            <h4>Filtrer par groupe :</h4>
+            <% if @group_counts.present? %>
+              <% @group_counts.each do |group, count| %>
+                <%= link_to "#{group} (#{count})", employees_path(group: group, position: params[:position]), class: "btn-filter #{'active' if params[:group] == group}" %>
+              <% end %>
+            <% else %>
+              <p>Aucun groupe disponible.</p>
+            <% end %>
+          </div>
+          <div>
+            <!-- Filtre par poste -->
+            <h4>Filtrer par poste :</h4>
+            <% if @position_counts.present? %>
+              <% @position_counts.each do |position, count| %>
+                <%= link_to "#{position} (#{count})", employees_path(position: position, group: params[:group]), class: "btn-filter #{'active' if params[:position] == position}" %>
+              <% end %>
+            <% else %>
+              <p>Aucun poste disponible.</p>
+            <% end %>
+          </div>
+        </div>
       </div>
     </div>
 
 
 
-    <table>
+    <table class="tableAnnuaire">
+      <colgroup>
+        <col style="width: 200px;"> <!-- Première colonne plus large -->
+        <col style="width: auto;"> <!-- Colonne pour le matin -->
+        <col style="width: auto;"> <!-- Colonne pour l'après-midi -->
+      </colgroup>
       <thead>
         <tr>
           <th>Identité</th>
@@ -71,12 +192,13 @@
             <% current_year = Date.today.year %>
             <% leaves_taken = employee.events.where(event_type: 'congé', status: 'approuvé', start_date: Date.new(current_year)..Date.new(current_year).end_of_year).sum(:leave_days_count) %>
             <td><%= leaves_taken %> jour(s)</td>
-
+<!--
             <td>
               <%#= link_to "Voir", employee_path(employee) %>
               <%#= link_to "Modifier", edit_employee_path(employee) %>
               <%#= link_to "Supprimer", employee_path(employee), data: { turbo_method: :delete, turbo_confirm: "Êtes-vous sûr ?" } %>
             </td>
+            -->
           </tr>
         <% end %>
       </tbody>
@@ -87,137 +209,38 @@
   </div>
 
   <div class="halfwidth formdiv">
-    <h3>Demandes d'événements en attente</h3>
-    <ul>
+    <h3>Demandes en attente</h3>
+    <ul class="flexincolleft">
       <% if Event.where(status: 'en_attente').present? %>
         <% Event.where(status: 'en_attente').each do |event| %>
-          <li>
-            <%= event.employee.firstname %> <%= event.employee.lastname %> :
+          <li class="flexinlineleft">
+            <div>
+              <%= event.employee.firstname %> <%= event.employee.lastname %> :
+                <% if event.event_type == 'heures_supplémentaires' %>
+                  Heures sup le <%= l(event.start_date, format: "%d/%m") %> - <%= event.overtime_hours %> h
+                <% else %>
+                  <%= event.event_type.capitalize %>
+                  <% if event.start_date == event.end_date && event.part_of_day.present? %>
+                    (<%= event.part_of_day == "morning" ? "Matin" : "Après-midi" %>)
+                  <% end %>
+                  du <%= l(event.start_date, format: "%d/%m") %> au <%= l(event.end_date, format: "%d/%m") %>
+                <% end %>
+            </div>
+            <div class="btn-inline">
+              <%= button_to approve_employee_event_path(event.employee, event), method: :patch, class: "btn btn-approve" do %>
+                <i class="fa-solid fa-check"></i>
+              <% end %>
 
-            <% if event.event_type == 'heures_supplémentaires' %>
-              <%= event.event_type.capitalize %> le <%= l(event.start_date, format: :long) %> - <strong><%= event.overtime_hours %> heure(s)</strong>
-            <% else %>
-              <%= event.event_type.capitalize %> du <%= l(event.start_date, format: :long) %> au <%= l(event.end_date, format: :long) %>
-            <% end %>
-
-            <%= button_to "Approuver", approve_employee_event_path(event.employee, event), method: :patch, class: "button-success" %>
-            <%= button_to "Refuser", reject_employee_event_path(event.employee, event), method: :patch, class: "button-danger" %>
+              <%= button_to reject_employee_event_path(event.employee, event), method: :patch, class: "btn btn-reject" do %>
+                <i class="fa-solid fa-xmark"></i>
+              <% end %>
+            </div>
           </li>
         <% end %>
       <% else %>
-        <li>Aucune demande en attente.</li>
+        <li class="flexinlineleft">Aucune demande en attente.</li>
       <% end %>
 
     </ul>
   </div>
-</div>
-
-<div class="formdiv fullwidth">
-<%= form_with url: employees_path, method: :get, local: true, html: { id: "filter-form" } do %>
-  <div class="filter-container">
-    <%# Initialiser le décalage de mois à partir des paramètres ou à 0 si non défini %>
-<% month_offset = params[:month_offset].to_i %>
-
-<%# Calcul des dates de début et de fin en fonction du décalage %>
-<% start_date = (Date.today.beginning_of_month >> month_offset) %>
-<% end_date = (Date.today.end_of_month >> month_offset) %>
-
-    <div class="filter-container">
-      <%# Vérifier si des dates sont fournies via les paramètres, sinon utiliser le mois courant %>
-      <% start_date = params[:start_date].present? ? Date.parse(params[:start_date]) : Date.today.beginning_of_month %>
-      <% end_date = params[:end_date].present? ? Date.parse(params[:end_date]) : start_date.end_of_month %>
-
-      <label for="start_date">Date de début :</label>
-      <%= date_field_tag :start_date, start_date, id: "start_date_field", class: "date-input" %>
-
-      <label for="end_date">Date de fin :</label>
-      <%= date_field_tag :end_date, end_date, id: "end_date_field", class: "date-input" %>
-
-      <%= submit_tag "Filtrer", class: "button" %>
-
-      <!-- Bouton pour le mois précédent : décale les dates actuellement affichées d'un mois en arrière -->
-      <%= link_to "Mois précédent", employees_path(start_date: (start_date << 1).beginning_of_month, end_date: (start_date << 1).end_of_month), class: "btn-filter" %>
-
-      <!-- Bouton pour le mois en cours : réinitialise les dates au mois courant -->
-      <%= link_to "Mois en cours", employees_path(start_date: Date.today.beginning_of_month, end_date: Date.today.end_of_month), class: "btn-filter" %>
-
-      <!-- Bouton pour le mois suivant : décale les dates actuellement affichées d'un mois en avant -->
-      <%= link_to "Mois suivant", employees_path(start_date: (start_date >> 1).beginning_of_month, end_date: (start_date >> 1).end_of_month), class: "btn-filter" %>
-
-    </div>
-
-<% end %>
-
-<table>
-  <thead>
-  </thead>
-  <tbody>
-  <% start_date = params[:start_date].present? ? Date.parse(params[:start_date]) : Date.today %>
-  <% end_date = params[:end_date].present? ? Date.parse(params[:end_date]) : Date.today.end_of_month %>
-
-<table class="tablePlanning">
-  <colgroup>
-    <col style="width: 200px;"> <!-- Première colonne plus large -->
-    <% (start_date..end_date).each do %>
-      <col style="width: 12px;"> <!-- Colonne pour le matin -->
-      <col style="width: 12px;"> <!-- Colonne pour l'après-midi -->
-    <% end %>
-  </colgroup>
-  <thead>
-    <tr>
-      <th class="tPlanning"><%= mois_francais(start_date) %></th>
-      <% (start_date..end_date).each do |date| %>
-        <th class="tPlanning" colspan="2" style="<%= 'color: red;' if date == Date.today %>">
-          <%= date.strftime("%d") %>
-        </th>
-      <% end %>
-    </tr>
-  </thead>
-  <tbody>
-    <% @employees.each do |employee| %>
-      <tr>
-        <td><%= link_to "#{employee.lastname} #{employee.firstname}", employee_path(employee), class:"FirstCol link-text" %></td>
-        <% (start_date..end_date).each do |date| %>
-          <%# event = employee.event_on(date) %>
-          <% event = employee.events.where(status: 'approuvé').find { |e| e.start_date <= date && e.end_date >= date } %>
-
-          <!-- Matin -->
-          <td style="
-            <% if employee.default_days_off&.include?(date.wday) %>
-              background-color: gray; color: white; font-weight: bold;
-            <% elsif event&.event_type == "arrêt_maladie" && event.part_of_day != 'afternoon' %>
-              background-color: var(--sick-color); color: white; font-weight: bold;
-            <% elsif event&.event_type == "télétravail" && event.part_of_day != 'afternoon' %>
-              background-color: var(--remote-color); color: white; font-weight: bold;
-            <% elsif event&.event_type == "congé" && event.part_of_day != 'afternoon' %>
-              background-color: var(--holiday-color); color: white; font-weight: bold;
-            <% else %>
-              background-color: white; color: black;
-            <% end %>
-          ">
-          </td>
-
-          <!-- Après-midi -->
-          <td style="
-            <% if employee.default_days_off&.include?(date.wday) %>
-              background-color: gray; color: white; font-weight: bold;
-            <% elsif event&.event_type == "arrêt_maladie" && event.part_of_day != 'morning' %>
-              background-color: var(--sick-color); color: white; font-weight: bold;
-            <% elsif event&.event_type == "télétravail" && event.part_of_day != 'morning' %>
-              background-color: var(--remote-color); color: white; font-weight: bold;
-            <% elsif event&.event_type == "congé" && event.part_of_day != 'morning' %>
-              background-color: var(--holiday-color); color: white; font-weight: bold;
-            <% else %>
-              background-color: white; color: black;
-            <% end %>
-          ">
-          </td>
-        <% end %>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
-
-  </tbody>
-</table>
 </div>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= content_for(:title) || "Smart Flow" %></title>
+    <title><%= content_for(:title) || "smartFlow" %></title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
@@ -31,10 +31,10 @@
     </div>
     <div class="PageContent">
       <%#= render "shared/navbar" %>
-      <%= render "shared/flashes" %>
-      <p class="notice"><%= notice %></p>
-      <p class="alert"><%= alert %></p>
+   <!--  <%#%>= render "shared/flashes" %> -->
       <%= yield %>
+   <!--   <p class="notice"><%= notice %></p>
+      <p class="alert"><%= alert %></p> -->
     </div>
   </div>
 

@@ -1,8 +1,8 @@
 .filter-container {
   display: flex;
   align-items: center;
-  gap: 10px; /* Espace entre les champs */
-  margin-bottom: 15px;
+  gap: 25px; /* Espace entre les champs */
+  padding: 0px 20px;
 }
 
 .date-input {
@@ -34,4 +34,11 @@
   background-color: black; /* Reste en noir pour l'élément actif */
   color: white;
   font-weight: 400;
+}
+.ml60px {
+  margin-left: 60px;
+}
+
+.mt20 {
+  margin-top: 20px;
 }

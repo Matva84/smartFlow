@@ -23,6 +23,7 @@ document.addEventListener("DOMContentLoaded", function() {
   const endDateField = document.getElementById('end_date_field');
   const eventTypeField = document.getElementById('event_event_type');
   const partOfDayFields = document.getElementById('part_of_day_fields');
+  const overtimeField = document.querySelector('#overtime_hours_field');
 
   function toggleFields() {
     const startDate = new Date(startDateField.value);
@@ -31,8 +32,10 @@ document.addEventListener("DOMContentLoaded", function() {
     if (eventType === 'heures_supplémentaires') {
       endDateField.style.display = "none";
       endDateField.value = startDateField.value;
+      overtimeField.style.display = 'block';
     } else {
       endDateField.style.display = "block";
+      overtimeField.style.display = 'none';
     }
   }
 
@@ -83,8 +86,10 @@ document.addEventListener("DOMContentLoaded", function() {
 
     if (startDate && endDate && startDate.getTime() === endDate.getTime() && eventType !== 'heures_supplémentaires') {
       partOfDayFields.style.display = "block";
+      document.getElementById("part_of_day_full_day").checked = true; // Sélectionner par défaut "Journée entière"
     } else {
       partOfDayFields.style.display = "none";
+      document.getElementById("part_of_day_full_day").checked = false; // Désélectionner si les dates changent
     }
   }
 

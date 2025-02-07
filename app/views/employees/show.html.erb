@@ -1,29 +1,140 @@
-<%= link_to "Retour à la liste", employees_path %>
-<h1>Détails de l'employé</h1>
-<%= link_to "Modifier", edit_employee_path(@employee) %> <%= button_to "Supprimer", employee_path(@employee), method: :delete, data: { confirm: "Êtes-vous sûr ?" } %>
+<!--<%= link_to "Retour à la liste", employees_path %>-->
 
-<p><strong>Prénom :</strong> <%= @employee.firstname %> <strong>NOM :</strong> <%= @employee.lastname %></p>
-<p><strong>Email :</strong> <%= @employee.email %></p>
-<p><strong>Téléphone :</strong> <%= @employee.phone %></p>
-<p><strong>Adresse :</strong> <%= @employee.address %></p>
-<p><strong>Poste :</strong> <%= @employee.position %> <strong>Groupe :</strong> <%= @employee.group %></p>
-<p><strong>Salaire horaire :</strong> <%= number_to_currency(@employee.hoursalary, unit: "€") %></p>
+<div class="flexinline">
+  <div class="halfwidth formdiv">
+    <div class="flexinline">
+      <h1>Détails de l'employé</h1>
+      <%= link_to edit_employee_path(@employee), class: "btn-edit" do %>
+        <i class="fa fa-pencil-alt"></i>
+      <% end %>
+    </div>
 
-<%= link_to "Ajouter un événement", new_employee_event_path(@employee), class: "button" %>
+    <!--<%= button_to "Supprimer", employee_path(@employee), method: :delete, data: { confirm: "Êtes-vous sûr ?" } %>-->
 
-<h2>Congés pris</h2>
-<ul>
-  <% if @leave_counts.present? %>
-    <% @leave_counts.each do |year, total_days| %>
-      <li><strong>Année <%= year %> :</strong> <%= total_days %> jour(s) de congé</li>
-    <% end %>
-  <% else %>
-    <li>Aucun congé enregistré.</li>
-  <% end %>
-</ul>
+    <p><strong>Prénom :</strong> <%= @employee.firstname %> <strong style="margin-left:30px">NOM :</strong> <%= @employee.lastname %></p>
+    <p><strong>Email :</strong> <%= @employee.email %></p>
+    <p><strong>Téléphone :</strong> <%= @employee.phone %></p>
+    <p><strong>Adresse :</strong> <%= @employee.address %></p>
+    <p><strong>Poste :</strong> <%= @employee.position %> <strong style="margin-left:30px">Groupe :</strong> <%= @employee.group %></p>
+    <p><strong>Salaire horaire :</strong> <%= number_to_currency(@employee.hoursalary, unit: "€") %></p>
+  </div>
+  <div class="halfwidth">
+    <div class="nav-lateral-menu">
+      <ul style="list-style-type: none;">
+        <li>
+          <%= link_to new_employee_event_path(@employee), class: "btn btn-lat-menu" do %>
+            <strong>Ajouter un événement (congé, télétravail, heures supp.)</strong>
+          <% end %>
+        </li>
+        <li>
+          <%= link_to new_employee_event_path(@employee), class: "btn btn-lat-menu" do %>
+            <strong>Ajouter une note de frais</strong>
+          <% end %>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
 
+<div class="autoflexinline">
+  <div class="details formdiv">
+    <h3>Congés <%= Date.today.year %> :</h3>
+    <ul class="flexincolleft">
+      <% if defined?(@current_year_leaves) && @current_year_leaves.present? && @current_year_leaves.any? %>
+        <% @current_year_leaves.each do |leave| %>
+          <li class="flexinlineleft">
+            Du <%= l(leave.start_date, format: "%d/%m") %> au <%= l(leave.end_date, format: "%d/%m") %>
+            <% if leave.part_of_day.present? %>
+              (<%= leave.part_of_day == 'morning' ? 'Matin' : 'Après-midi' %>)
+            <% end %>
+            <!-- Bouton pour supprimer l'événement -->
+            <%= button_to employee_event_path(@employee, leave), method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce congé ?" }, class: "btn btn-reject" do %>
+              <i class="fa-solid fa-xmark"></i>
+            <% end %>
+          </li>
+        <% end %>
+      <% else %>
+        <li class="flexinlineleft">Aucun congé pris cette année.</li>
+      <% end %>
+    </ul>
+  </div>
+  <div class="details formdiv">
+    <h3>Télétravail <%= Date.today.year %> :</h3>
+    <ul class="flexincolleft">
+      <% if @current_year_teleworks.present? && @current_year_teleworks.any? %>
+        <% @current_year_teleworks.each do |telework| %>
+          <li class="flexinlineleft">
+            Le <%= l(telework.start_date, format: "%d/%m") %>
+            <% if telework.part_of_day.present? %>
+              (<%= telework.part_of_day == 'morning' ? 'Matin' : 'Après-midi' %>)
+            <% end %>
+
+            <!-- Bouton pour supprimer l'événement -->
+            <%= button_to employee_event_path(@employee, telework), method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce jour de télétravail ?" }, class: "btn btn-reject" do %>
+              <i class="fa-solid fa-xmark"></i>
+            <% end %>
+          </li>
+        <% end %>
+      <% else %>
+        <li class="flexinlineleft">Aucun jour de télétravail cette année.</li>
+      <% end %>
+    </ul>
+  </div>
+  <div class="details formdiv">
+    <h3>Arrêts maladie <%= Date.today.year %> :</h3>
+    <ul class="flexincolleft">
+      <% if @current_year_sick_leaves.present? && @current_year_sick_leaves.any? %>
+        <% @current_year_sick_leaves.each do |sick_leave| %>
+          <li class="flexinlineleft">
+            Du <%= l(sick_leave.start_date, format: "%d/%m") %> au <%= l(sick_leave.start_date, format: "%d/%m") %>
+            <% if sick_leave.part_of_day.present? %>
+              (<%= sick_leave.part_of_day == 'morning' ? 'Matin' : 'Après-midi' %>)
+            <% end %>
+
+            <!-- Bouton pour supprimer l'événement -->
+            <%= button_to employee_event_path(@employee, sick_leave), method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cet arrêt maladie ?" }, class: "btn btn-reject" do %>
+              <i class="fa-solid fa-xmark"></i>
+            <% end %>
+          </li>
+        <% end %>
+      <% else %>
+        <li class="flexinlineleft">Aucun arrêt maladie cette année.</li>
+      <% end %>
+    </ul>
+  </div>
+</div>
+
+<div class="autoflexinline">
+  <div class="details formdiv">
+    <h3>Heures supplémentaires <%= Date.today.year %> </h3>
+      <ul class="flexincolleft">
+        <% @employee.events.where(event_type: 'heures_supplémentaires').each do |overtime| %>
+          <li class="flexinlineleft">
+            Le <%= l(overtime.start_date, format: "%d/%m") %> : <strong><%= overtime.overtime_hours %> heures</strong>
+            <%= button_to employee_event_path(@employee, overtime), method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cet arrêt maladie ?" }, class: "btn btn-reject" do %>
+              <i class="fa-solid fa-xmark"></i>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+  </div>
+  <div class="details formdiv">
+    <h2>Congés antérieurs</h2>
+    <ul class="flexincolleft">
+      <% if @leave_counts.present? %>
+        <% @leave_counts.each do |year, total_days| %>
+          <li class="flexinlineleft"><strong>Année <%= year %> :</strong> <%= total_days %> jour(s) de congé</li>
+        <% end %>
+      <% else %>
+        <li class="flexinlineleft">Aucun congé enregistré.</li>
+      <% end %>
+    </ul>
+  </div>
+</div>
+
+<!--
 <% @current_year_leaves.each do |leave| %>
-  <li>
+  <li class="flexinlineleft">
     Du <%= l(leave.start_date, format: :long) %> au <%= l(leave.end_date, format: :long) %>
     <% if leave.part_of_day.present? %>
       (<%= leave.part_of_day == 'morning' ? 'Matinée' : 'Après-midi' %>)
@@ -32,81 +143,10 @@
     <span class="status <%= leave.status %>">
       (<%= leave.status.humanize %>)
     </span>
-    <!-- Bouton pour supprimer l'événement -->
+
     <% if leave.status == 'en_attente' %>
       <%= button_to "Supprimer", employee_event_path(@employee, leave), method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce congé ?" }, class: "button-danger" %>
     <% end %>
   </li>
 <% end %>
-
-<h3>Heures supplémentaires</h3>
-<ul>
-  <% @employee.events.where(event_type: 'heures_supplémentaires').each do |overtime| %>
-    <li>
-      Le <%= l(overtime.start_date, format: :long) %> : <strong><%= overtime.overtime_hours %> heures</strong>
-    </li>
-  <% end %>
-</ul>
-
-<div class="flexinline">
-  <div class="details">
-    <h3>Détails des congés pour <%= Date.today.year %> :</h3>
-    <ul>
-      <% if defined?(@current_year_leaves) && @current_year_leaves.present? && @current_year_leaves.any? %>
-        <% @current_year_leaves.each do |leave| %>
-          <li>
-            Du <%= l(leave.start_date, format: :long) %> au <%= l(leave.end_date, format: :long) %>
-            <% if leave.part_of_day.present? %>
-              (<%= leave.part_of_day == 'morning' ? 'Matinée' : 'Après-midi' %>)
-            <% end %>
-
-            <!-- Bouton pour supprimer l'événement -->
-            <%= button_to "Supprimer", employee_event_path(@employee, leave), method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce congé ?" }, class: "button-danger" %>
-          </li>
-        <% end %>
-      <% else %>
-        <li>Aucun congé pris cette année.</li>
-      <% end %>
-    </ul>
-  </div>
-  <div class="details">
-    <h3>Détails des jours de télétravail pour <%= Date.today.year %> :</h3>
-    <ul>
-      <% if @current_year_teleworks.present? && @current_year_teleworks.any? %>
-        <% @current_year_teleworks.each do |telework| %>
-          <li>
-            Le <%= l(telework.start_date, format: :long) %>
-            <% if telework.part_of_day.present? %>
-              (<%= telework.part_of_day == 'morning' ? 'Matinée' : 'Après-midi' %>)
-            <% end %>
-
-            <!-- Bouton pour supprimer l'événement -->
-            <%= button_to "Supprimer", employee_event_path(@employee, telework), method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce jour de télétravail ?" }, class: "button-danger" %>
-          </li>
-        <% end %>
-      <% else %>
-        <li>Aucun jour de télétravail cette année.</li>
-      <% end %>
-    </ul>
-  </div>
-  <div class="details">
-    <h3>Détails des arrêts maladie pour <%= Date.today.year %> :</h3>
-    <ul>
-      <% if @current_year_sick_leaves.present? && @current_year_sick_leaves.any? %>
-        <% @current_year_sick_leaves.each do |sick_leave| %>
-          <li>
-            Du <%= l(sick_leave.start_date, format: :long) %> au <%= l(sick_leave.end_date, format: :long) %>
-            <% if sick_leave.part_of_day.present? %>
-              (<%= sick_leave.part_of_day == 'morning' ? 'Matinée' : 'Après-midi' %>)
-            <% end %>
-
-            <!-- Bouton pour supprimer l'événement -->
-            <%= button_to "Supprimer", employee_event_path(@employee, sick_leave), method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cet arrêt maladie ?" }, class: "button-danger" %>
-          </li>
-        <% end %>
-      <% else %>
-        <li>Aucun arrêt maladie cette année.</li>
-      <% end %>
-    </ul>
-  </div>
-</div>
+-->

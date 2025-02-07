@@ -17,23 +17,25 @@
 
   <div>
     <%= form.label :start_date, "Date de début" %>
-    <%= form.date_field :start_date, id: "start_date_field", min: Date.today %>
+    <%= form.date_field :start_date, id: "start_date_field", min: Date.today-31 %>
   </div>
 
   <div>
     <%= form.label :end_date, "Date de fin" %>
-    <%= form.date_field :end_date, id: "end_date_field", min: Date.today %>
+    <%= form.date_field :end_date, id: "end_date_field", min: Date.today-31 %>
   </div>
 
  <!-- Champ pour les heures supplémentaires (visible uniquement si 'heures_supplémentaires' est sélectionné) -->
   <div id="overtime_hours_field" style="display: none;">
     <%= form.label :overtime_hours, "Nombre d'heures supplémentaires" %>
-    <%= form.number_field :overtime_hours, step: 0.5 %>
+    <%= form.number_field :overtime_hours, step: 0.5, min:0, max:8 %>
   </div>
-  
-  <!-- Champs pour matinée ou après-midi (masqués par défaut) -->
+
+  <!-- Champs pour matinée ou après-midi -->
   <div id="part_of_day_fields" style="display: none;">
     <%= form.label :part_of_day, "Moment de la journée" %><br>
+    <%= form.radio_button :part_of_day, "", checked: true, id: "part_of_day_full_day" %>
+    <%= form.label :part_of_day, "Journée entière", for: "part_of_day_full_day" %><br>
     <%= form.radio_button :part_of_day, "morning", id: "part_of_day_morning" %>
     <%= form.label :part_of_day, "Matinée", for: "part_of_day_morning" %><br>
     <%= form.radio_button :part_of_day, "afternoon", id: "part_of_day_afternoon" %>

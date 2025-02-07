@@ -1,5 +1,5 @@
 .formdiv {
-  margin: 10px 10px;
+  margin: 0;
   padding: 10px;
   border-radius: 16px;
   background-color: #f9f9f9;
@@ -11,6 +11,9 @@
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 .fixedSize200 {
   width: 200px;
@@ -37,10 +40,32 @@
 .flexinline {
   display: flex;
   flex-direction: row;
+  width: 100%;
+  justify-content: space-between;
+}
+.flexinlineleft {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  padding: 0;
+  justify-content: space-between;
+}
+.flexincolleft {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 0;
 }
 .details {
+  flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   width: 100%;
+}
+.autoflexinline {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  gap:20px;
 }

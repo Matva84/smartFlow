@@ -25,17 +25,22 @@ class Event < ApplicationRecord
       errors.add(:start_date, "ne peut pas être après la date de fin")
     end
   end
-  # Validation pour le champ `part_of_day`
+
   def validate_part_of_day
     return if event_type == 'heures_supplémentaires'  # Ignore la validation pour les heures supplémentaires
 
-    if start_date == end_date && part_of_day.nil?
-      errors.add(:part_of_day, "doit être spécifié si la date de début et la date de fin sont identiques")
-    elsif start_date != end_date && part_of_day.present?
-      errors.add(:part_of_day, "ne peut être défini que si les dates de début et de fin sont identiques")
+    if start_date == end_date
+      # Si la date de début et de fin sont identiques, `part_of_day` peut être vide (journée entière)
+      if part_of_day.nil?
+        self.part_of_day = "" # On force la valeur vide pour éviter l'erreur de validation
+      end
+    elsif start_date != end_date
+      # Si plusieurs jours sont sélectionnés, part_of_day doit être vide
+      if part_of_day.present?
+        errors.add(:part_of_day, "ne peut être défini que si les dates de début et de fin sont identiques")
+      end
     end
   end
-
 
   def start_date_cannot_be_in_the_past
     if event_type == 'congé' && start_date.present? && start_date < Date.today
@@ -62,11 +67,11 @@ class Event < ApplicationRecord
       employee.default_days_off.include?(date.wday)
     end
 
-    # Calcul des jours de congé effectifs
-    if part_of_day.present?
-      self.leave_days_count = 0.5
-    else
+    # Si part_of_day est vide ou non sélectionné → Journée complète
+    if part_of_day.blank?
       self.leave_days_count = working_days.size
+    elsif part_of_day.present?
+      self.leave_days_count = 0.5
     end
   end
 
@@ -108,5 +113,5 @@ class Event < ApplicationRecord
       errors.add(:base, "Des heures supplémentaires ont déjà été posées pour ce jour.")
     end
   end
-  
+
 end

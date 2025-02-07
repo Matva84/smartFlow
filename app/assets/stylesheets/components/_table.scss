@@ -1,19 +1,28 @@
 td {
-  padding: 5px 25px; /* Ajustez la valeur selon vos besoins */
+  padding: 5px 0px; /* Ajustez la valeur selon vos besoins */
+}
+th {
+  font-size: 12px;
 }
 
 .tablePlanning {
   width: 100%; /* S'assure que le tableau utilise toute la largeur disponible */
   max-width: 100%;
-
   table-layout: fixed; /* Force chaque colonne à respecter sa largeur */
+  margin-top: 20px;
+}
+.tableAnnuaire {
+  width: 100%; /* S'assure que le tableau utilise toute la largeur disponible */
+  max-width: 100%;
+  table-layout: fixed; /* Force chaque colonne à respecter sa largeur */
+  margin-top: 20px;
 }
 
 .tPlanning {
   width: 10px !important; /* Définit une largeur fixe pour toutes les colonnes */
   text-align: center; /* Centre le texte dans les colonnes */
   padding: 0px; /* Ajoute un léger espace à l'intérieur des cellules */
-  border: 1px solid #ccc !important;
+  border: 0px solid #ccc !important;
 }
 .FirstCol {
   width: 200px !important; /* Définit une largeur fixe pour la première colonne */
