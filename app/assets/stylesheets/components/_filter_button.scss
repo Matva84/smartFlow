@@ -1,0 +1,28 @@
+.filter-buttons {
+  margin-bottom: 20px;
+}
+
+.btn-filter, .btn-filter-all {
+  display: inline-block;
+  margin-right: 10px;
+  padding: 6px 14px;
+  background-color: lightgrey;
+  color: white;
+  text-decoration: none;
+  border-radius: 16px;
+  font-size: 14px;
+  font-weight: 300;
+  border: 1px solid black;
+  transition: background-color 0.5s ease;
+}
+
+.btn-filter:hover, .btn-filter-all:hover {
+  background-color: white;
+  color: black;
+}
+
+.btn-filter.active, .btn-filter-all.active {
+  background-color: black; /* Reste en noir pour l'élément actif */
+  color: white;
+  font-weight: 400;
+}

@@ -1,0 +1,45 @@
+<% if @event.errors.any? %>
+  <div class="alert alert-danger">
+    <h4>Erreur(s) lors de la création de l'événement :</h4>
+    <ul>
+      <% @event.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<%= form_with(model: [@employee, @event], local: true) do |form| %>
+  <div>
+    <%= form.label :event_type, "Type d'événement" %>
+    <%= form.select :event_type, [["Congé", "congé"], ["Télétravail", "télétravail"], ["Heures Supplémentaires", "heures_supplémentaires"], ["Arrêt Maladie", "arrêt_maladie"]], prompt: "Sélectionner un type", id: "event_type_select" %>
+  </div>
+
+  <div>
+    <%= form.label :start_date, "Date de début" %>
+    <%= form.date_field :start_date, id: "start_date_field", min: Date.today %>
+  </div>
+
+  <div>
+    <%= form.label :end_date, "Date de fin" %>
+    <%= form.date_field :end_date, id: "end_date_field", min: Date.today %>
+  </div>
+
+ <!-- Champ pour les heures supplémentaires (visible uniquement si 'heures_supplémentaires' est sélectionné) -->
+  <div id="overtime_hours_field" style="display: none;">
+    <%= form.label :overtime_hours, "Nombre d'heures supplémentaires" %>
+    <%= form.number_field :overtime_hours, step: 0.5 %>
+  </div>
+  
+  <!-- Champs pour matinée ou après-midi (masqués par défaut) -->
+  <div id="part_of_day_fields" style="display: none;">
+    <%= form.label :part_of_day, "Moment de la journée" %><br>
+    <%= form.radio_button :part_of_day, "morning", id: "part_of_day_morning" %>
+    <%= form.label :part_of_day, "Matinée", for: "part_of_day_morning" %><br>
+    <%= form.radio_button :part_of_day, "afternoon", id: "part_of_day_afternoon" %>
+    <%= form.label :part_of_day, "Après-midi", for: "part_of_day_afternoon" %>
+  </div>
+
+  <%= form.submit "Créer l'événement", class: "button" %>
+<% end %>
+<div id="default_days_off_data" data-days-off="<%= @employee.default_days_off.to_json %>"></div>

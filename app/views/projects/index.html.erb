@@ -1,32 +1,19 @@
-<h1>Liste des projets</h1>
+<div class="formdiv fullwidth">
 
-<table>
-  <thead>
-    <tr>
-      <th>Nom</th>
-      <th>Client</th>
-      <th>Date de début</th>
-      <th>Date de fin</th>
-      <th>Progression</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @projects.each do |project| %>
-      <tr>
-        <td><%= project.name %></td>
-        <td><%= project.client.firstname %> <%= project.client.lastname %></td>
-        <td><%= project.start_at %></td>
-        <td><%= project.end_at %></td>
-        <td><%= project.progression %> %</td>
-        <td>
-          <%= link_to "Voir", project_path(project) %>
-          <%#= link_to "Modifier", edit_project_path(project) %> 
-          <%#= link_to "Supprimer", project_path(project), method: :delete, data: { confirm: "Êtes-vous sûr ?" } %>
-        </td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
+  <table>
+    <tbody>
+      <% @projects.each do |project| %>
+        <tr>
+          <td><%= link_to "#{project.name}", project_path(project), class:"link-text" %></td>
+          <td><%= link_to "#{project.client.lastname} #{project.client.firstname}", project_path(project), class:"link-text" %></td>
+          <td><%= project.client.phone %></td>
+          <td><%= project.start_at %></td>
+          <td><%= project.end_at %></td>
+          <td><%= project.progression %> %</td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
 
-<%= link_to "Créer un nouveau projet", new_project_path %>
+  <%= link_to "Créer un nouveau projet", new_project_path, class: "link-button"  %>
+</div>

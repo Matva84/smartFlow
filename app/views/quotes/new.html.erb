@@ -13,8 +13,8 @@
 
 <%= form_with(model: @quote, local: true) do |form| %>
   <div class="mb-3">
-    <%= form.label :number, "Numéro du devis" %>
-    <%= form.text_field :number, value: @quote.number || "Numéro généré automatiquement", class: "form-control", readonly: true %>
+    <%= form.label :number, "Numéro" %>
+    <%= form.text_field :number, value: @quote.number, class: "form-control", readonly: true %>
   </div>
 
   <div class="mb-3">

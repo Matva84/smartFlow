@@ -3,3 +3,16 @@
 @import "avatar";
 @import "form_legend_clear";
 @import "navbar";
+@import "page_content";
+@import "formdiv";
+@import "filter_button";
+@import "buttons";
+@import "employee";
+@import "table";
+
+:root {
+  --onsite-color: #FEF9F2; /* Couleur principale */
+  --remote-color: #789DBC; /* Couleur secondaire */
+  --holiday-color: #7fcb95; /* Couleur de fond */
+  --sick-color: #FFE3E3; /* Couleur du texte */
+}

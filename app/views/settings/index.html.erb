@@ -1,0 +1,22 @@
+<h1>Paramètres</h1>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Clé</th>
+      <th>Valeur</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @settings.each do |setting| %>
+      <tr>
+        <td><%= setting.key.humanize %></td>
+        <td><%= setting.value %></td>
+        <td>
+          <%= link_to "Modifier", edit_setting_path(setting), class: "btn btn-warning btn-sm" %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

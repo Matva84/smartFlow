@@ -1,21 +1,8 @@
-#class Quote < ApplicationRecord
-#  belongs_to :project
-
-#  validates :number, presence: true, uniqueness: true
-##  validates :status, presence: true, inclusion: { in: %w[Création Prêt\ à\ envoyer Envoyé Accepté Rejeté A\ modifier] }
-
-  # Définir une valeur par défaut pour le statut
-#  after_initialize :set_default_status, if: :new_record?
-
-#  private
-
-#  def set_default_status
-#    self.status ||= "Création"
-#    self.total ||= 0
-#  end
-#end
 class Quote < ApplicationRecord
   belongs_to :project
+  belongs_to :parent_quote, class_name: "Quote", optional: true
+  has_many :amendments, class_name: "Quote", foreign_key: "parent_quote_id", dependent: :nullify
+  has_many :items, dependent: :destroy # Assure que les items liés sont accessibles
 
   validates :status, presence: true, inclusion: { in: %w[Création Prêt\ à\ envoyer Envoyé Accepté Rejeté A\ modifier] }
 
@@ -23,31 +10,63 @@ class Quote < ApplicationRecord
   before_create :generate_number
   after_initialize :set_default_status, if: :new_record?
 
-  private
+  def generate_amendment_number
+    # Extrait la base du numéro sans suffixe alphabétique
+    base_number = number.split("_")[0..2].join("_") # Exemple : "Devis_202501_0003"
 
-  def generate_number
+    # Trouver les amendements existants pour ce numéro de base
+    amendments = Quote.where("number LIKE ?", "#{base_number}_%").pluck(:number)
+
+    # Récupérer le dernier suffixe alphabétique
+    last_suffix = amendments.map { |num| num.split("_").last }.select { |s| s =~ /^[a-z]$/ }.max
+
+    # Déterminer le prochain suffixe
+    next_suffix = last_suffix ? last_suffix.next : "a"
+
+    "#{base_number}_#{next_suffix}"
+  end
+
+  def generate_temporary_number
     current_year = Time.now.year
-    current_month = Time.now.strftime("%m") # Mois au format "01", "02", etc.
-
-    # Trouver le dernier numéro utilisé pour l'année et le mois actuels
-    last_quote = Quote.where("number LIKE ?", "Devis_#{current_year}#{current_month}_%")
+    current_month = Time.now.strftime("%m")
+    quote_prefix = Setting.get("quote_prefix")
+    last_quote = Quote.where("number LIKE ?", "#{quote_prefix}_#{current_year}#{current_month}_%")
                       .order(:created_at)
                       .last
 
-    # Extraire le dernier incrément si un devis existe, sinon démarrer à 1
     last_increment = if last_quote.present?
                        last_quote.number.split("_").last.to_i
                      else
                        0
                      end
 
-    # Générer le nouveau numéro
-    new_increment = last_increment + 1
-    self.number = "Devis_#{current_year}#{current_month}_#{new_increment.to_s.rjust(4, '0')}" # Exemple: "Devis_202501_0001"
+    "#{quote_prefix}_#{current_year}#{current_month}_#{(last_increment + 1).to_s.rjust(4, '0')}"
   end
-  
+
+
+  private
+
+
   def set_default_status
     self.status ||= "Création"
     self.total ||= 0
   end
+
+  # Calculer le prochain suffixe alphabétique pour un amendement
+  def next_amendment_suffix
+    last_amendment = amendments.order(:created_at).last
+
+    if last_amendment&.number&.match?(/[a-z]$/)
+      # Incrémenter le dernier caractère alphabétique
+      last_amendment.number[-1].next
+    else
+      # Premier suffixe pour un devis parent
+      'a'
+    end
+  end
+
+  def generate_number
+    self.number ||= generate_temporary_number
+  end
+
 end

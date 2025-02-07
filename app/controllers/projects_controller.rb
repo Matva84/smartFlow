@@ -5,6 +5,7 @@ class ProjectsController < ApplicationController
 
   def index
     @projects = Project.all
+    @projects = Project.order(:progression)
   end
 
   def show

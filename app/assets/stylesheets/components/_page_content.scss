@@ -1,0 +1,103 @@
+html, body {
+  width: 100%;
+  height: 100%;
+  background-color: #e6ecf1;
+  padding:10px;
+  font-family: "Unbounded", serif;
+  font-weight: 200;
+}
+h1 {
+  font-size: 36px;
+  font-weight: 200;
+}
+h3 {
+  font-size: 28px;
+  font-weight: 400;
+}
+h4 {
+  font-size: 18px;
+  font-weight: 200;
+}
+h5 {
+  font-size: 20px;
+  font-weight: 400;
+}
+.txtcenter {
+  text-align: center;
+}
+.PageContainer {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  background-color: #f4f6f8;
+  border-radius: 16px;
+}
+.sideMenu {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0; /* Empêche la réduction de la taille de sideMenu */
+  padding: 20px;
+  background-color: #f4f6f8;
+  border-radius: 20px 0px 0px 20px;
+  border: 0px solid red;
+}
+.PageContent {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1; /* Permet à PageContent de prendre tout l'espace restant */
+  padding: 0px 40px;
+  background-color: #f4f6f8;
+  border-radius: 0px 20px 20px 0px;
+  border: 0px solid blue;
+}
+.nav-lateral-menu {
+  padding-top: 100px;
+  text-align: left;
+}
+.btn-lat-menu {
+  color: #31363F;
+  text-decoration: none;
+  padding: 10px 0;
+  font-size: 14px;
+  font-weight: 100;
+}
+.btn-lat-menu:hover {
+  scale: 1.05;
+}
+.btn:focus {
+  box-shadow: none;
+  outline: none;
+}
+.nav-lateral-menu-footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 20px 0;
+  text-align: left;
+  display: flex;
+  flex-direction: row;
+}
+.nav-lateral-menu-footer-text {
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  font-size: 12px;
+  font-weight: 300;
+}
+.LightGrey {
+  color: #31363F;
+}
+.avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  margin-right: 10px;
+  border: 1px solid #31363F;
+}
+.link-text {
+  color: #31363F;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 300;
+}

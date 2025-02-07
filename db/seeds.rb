@@ -214,4 +214,8 @@ end
 
 puts "6 projets créés avec succès !"
 
+Setting.create(key: "labor_tva", value: "20") # TVA sur la main-d'œuvre en %
+Setting.create(key: "material_tva", value: "5.5") # TVA sur le matériel en %
+Setting.create(key: "quote_prefix", value: "Devis_") # Préfixe pour les devis
+
 puts "Seeding completed successfully!"

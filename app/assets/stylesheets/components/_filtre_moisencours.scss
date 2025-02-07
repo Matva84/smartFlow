@@ -1,0 +1,37 @@
+.filter-container {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Espace entre les champs */
+  margin-bottom: 15px;
+}
+
+.date-input {
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.btn-filter-month {
+  display: inline-block;
+  margin-right: 10px;
+  padding: 6px 14px;
+  background-color: lightgrey;
+  color: white;
+  text-decoration: none;
+  border-radius: 16px;
+  font-size: 14px;
+  font-weight: 300;
+  border: 1px solid black;
+  transition: background-color 0.5s ease;
+}
+
+.btn-filter-month:hover {
+  background-color: white;
+  color: black;
+}
+
+.btn-filter-month.active {
+  background-color: black; /* Reste en noir pour l'élément actif */
+  color: white;
+  font-weight: 400;
+}

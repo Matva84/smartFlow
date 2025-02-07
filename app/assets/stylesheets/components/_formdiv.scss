@@ -1,0 +1,46 @@
+.formdiv {
+  margin: 10px 10px;
+  padding: 10px;
+  border-radius: 16px;
+  background-color: #f9f9f9;
+  box-shadow: 0 0 15px #ccc;
+  background-color: white;
+  flex-shrink: 0; /* Empêche la réduction de la taille de sideMenu */
+}
+.employeeResume {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.fixedSize200 {
+  width: 200px;
+}
+.onsite {
+  background-color: var(--onsite-color);
+  color: black;
+}
+.remote {
+  background-color: var(--remote-color);
+  color: white;
+}
+.holiday {
+  background-color: var(--holiday-color);
+  color: white;
+}
+.sick {
+  background-color: var(--sick-color);
+  color: white;
+}
+.fullwidth {
+  width: 100% !important;
+}
+.flexinline {
+  display: flex;
+  flex-direction: row;
+}
+.details {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+}

@@ -1,9 +1,35 @@
-<table>
+<h1>Liste des devis</h1>
+
+<div class="btn-group mb-3" role="group">
+  <%= link_to "Tous", quotes_path, class: "btn btn-secondary #{'active' if params[:status].blank?}" %>
+  <%= link_to "Création", quotes_path(status: "Création"), class: "btn btn-primary #{'active' if params[:status] == 'Création'}" %>
+  <%= link_to "Prêt à envoyer", quotes_path(status: "Prêt à envoyer"), class: "btn btn-primary #{'active' if params[:status] == 'Prêt à envoyer'}" %>
+  <%= link_to "Envoyé", quotes_path(status: "Envoyé"), class: "btn btn-primary #{'active' if params[:status] == 'Envoyé'}" %>
+  <%= link_to "Accepté", quotes_path(status: "Accepté"), class: "btn btn-primary #{'active' if params[:status] == 'Accepté'}" %>
+  <%= link_to "Rejeté", quotes_path(status: "Rejeté"), class: "btn btn-primary #{'active' if params[:status] == 'Rejeté'}" %>
+  <%= link_to "À modifier", quotes_path(status: "À modifier"), class: "btn btn-primary #{'active' if params[:status] == 'À modifier'}" %>
+</div>
+
+<!-- Filtres par période -->
+<div class="btn-group mb-3" role="group">
+  <%= link_to "Année passée", quotes_path(params.permit(:status).merge(period: "last_year")), class: "btn btn-primary #{'active' if params[:period] == 'last_year'}" %>
+  <%= link_to "Cette année", quotes_path(params.permit(:status).merge(period: "this_year")), class: "btn btn-primary #{'active' if params[:period] == 'this_year'}" %>
+  <%= link_to "Mois en cours", quotes_path(params.permit(:status).merge(period: "this_month")), class: "btn btn-primary #{'active' if params[:period] == 'this_month'}" %>
+  <%= link_to "Mois précédent", quotes_path(params.permit(:status).merge(period: "last_month")), class: "btn btn-primary #{'active' if params[:period] == 'last_month'}" %>
+</div>
+
+<h2>
+  Devis <%= params[:status].presence || "Tous" %> -
+  <%= params[:period].present? ? translate_period(params[:period]) : "toutes périodes" %>
+</h2>
+
+<table class="table table-striped">
   <thead>
     <tr>
       <th>Numéro</th>
+      <th>Projet</th>
       <th>Statut</th>
-      <th>Total</th>
+      <th>Date de création</th>
       <th>Actions</th>
     </tr>
   </thead>
@@ -11,10 +37,13 @@
     <% @quotes.each do |quote| %>
       <tr>
         <td><%= quote.number %></td>
+        <td><%= link_to quote.project.name, project_path(quote.project) if quote.project %></td>
         <td><%= quote.status %></td>
-        <td><%= number_to_currency(quote.total, unit: "€") %></td>
+        <td><%= l(quote.created_at, format: :short) %></td>
         <td>
           <%= link_to "Voir", quote_path(quote), class: "btn btn-info" %>
+          <%#= link_to "Modifier", edit_quote_path(quote), class: "btn btn-warning" %>
+          <%#= link_to "Supprimer", quote_path(quote), method: :delete, data: { confirm: "Êtes-vous sûr ?" }, class: "btn btn-danger" %>
         </td>
       </tr>
     <% end %>
