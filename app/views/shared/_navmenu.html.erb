@@ -64,10 +64,10 @@
   <div class="nav-lateral-menu-footer">
     <img src="" alt="" class="avatar">
     <div class="nav-lateral-menu-footer-text">
-
+        <% today = Date.today %>
         <% if user_signed_in? %>
           <p>Hello John 👋</p>
-          <p class="LightGrey">23/01/1984</p>
+          <p class="LightGrey"><%=today%></p>
           <%= link_to "Log out", destroy_user_session_path, data: {turbo_method: :delete}, class: "dropdown-item" %>
         <% else %>
           <li class="nav-item">

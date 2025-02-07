@@ -24,6 +24,14 @@ class EmployeesController < ApplicationController
     # Compter les employés par groupe et par poste
     @group_counts = Employee.group(:group).count
     @position_counts = Employee.group(:position).count
+
+    #@employees_all = Employee.all
+    today = Date.today
+
+    @remote_count = Event.where(event_type: 'télétravail').where("start_date <= ? AND end_date >= ?", today, today).count || 0
+    @holiday_count = Event.where(event_type: 'congé').where("start_date <= ? AND end_date >= ?", today, today).count || 0
+    @sick_count = Event.where(event_type: 'arrêt_maladie').where("start_date <= ? AND end_date >= ?", today, today).count || 0
+
   end
 
 

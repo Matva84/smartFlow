@@ -1,25 +1,34 @@
+<% today = Date.today %>
+
 <div class="employeeResume">
   <div class="formdiv fixedSize200">
     <h4>Nombre d'employés</h4>
     <h3 class="txtcenter"><%= @employees.size %>/<%= @employees.size %></h3>
   </div>
+
   <div class="formdiv fixedSize200 onsite">
     <h4>Sur site</h4>
-    <h3 class="txtcenter "><%= @employees.size %></h3>
+    <h3 class="txtcenter">
+      <%= @employees.size - @remote_count - @holiday_count - @sick_count %>
+    </h3>
   </div>
+
   <div class="formdiv fixedSize200 remote">
     <h4>En télétravail</h4>
-    <h3 class="txtcenter "><%= @employees.size %></h3>
+    <h3 class="txtcenter"><%= @remote_count %></h3>
   </div>
+
   <div class="formdiv fixedSize200 holiday">
     <h4>En congés</h4>
-    <h3 class="txtcenter "><%= @employees.size %></h3>
+    <h3 class="txtcenter"><%= @holiday_count %></h3>
   </div>
+
   <div class="formdiv fixedSize200 sick">
     <h4>En arrêt</h4>
-    <h3 class="txtcenter "><%= @employees.size %></h3>
+    <h3 class="txtcenter"><%= @sick_count %></h3>
   </div>
 </div>
+
 
 <div class="formdiv fullwidth">
   <%= form_with url: employees_path, method: :get, local: true, html: { id: "filter-form" } do %>
