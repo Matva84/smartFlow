@@ -20,7 +20,17 @@
 
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%#= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <%= javascript_importmap_tags %>
+    <meta name="user-logged-in" content="<%= user_signed_in? %>">
+      <% if user_signed_in? %>
+        <meta name="user-role" content="<%= current_user.employee.admin? ? 'admin' : 'employee' %>">
+      <% else %>
+        <meta name="user-role" content="guest">
+      <% end %>
+
   </head>
 
   <body>

@@ -28,10 +28,28 @@ class EmployeesController < ApplicationController
     #@employees_all = Employee.all
     today = Date.today
 
-    @remote_count = Event.where(event_type: 'télétravail').where("start_date <= ? AND end_date >= ?", today, today).count || 0
-    @holiday_count = Event.where(event_type: 'congé').where("start_date <= ? AND end_date >= ?", today, today).count || 0
-    @sick_count = Event.where(event_type: 'arrêt_maladie').where("start_date <= ? AND end_date >= ?", today, today).count || 0
+    # Vérifier si aujourd'hui est un jour de week-end ou un jour de repos pour chaque employé
+    non_working_employees = @employees.select do |employee|
+      employee.default_days_off.include?(today.wday) # Vérifie si aujourd'hui est un jour de repos
+    end.count
 
+    # Nombre d'employés en télétravail aujourd'hui
+    @remote_count = Event.where(event_type: 'télétravail')
+                         .where("start_date <= ? AND end_date >= ?", today, today)
+                         .count || 0
+
+    # Nombre d'employés en congé aujourd'hui
+    @holiday_count = Event.where(event_type: 'congé')
+                          .where("start_date <= ? AND end_date >= ?", today, today)
+                          .count || 0
+
+    # Nombre d'employés en arrêt maladie aujourd'hui
+    @sick_count = Event.where(event_type: 'arrêt_maladie')
+                       .where("start_date <= ? AND end_date >= ?", today, today)
+                       .count || 0
+
+    # Nombre d'employés sur site = Total - (Télétravail + Congés + Maladie + Jours non travaillés)
+    @onsite_count = @employees.size - (@remote_count + @holiday_count + @sick_count + non_working_employees)
   end
 
 
@@ -53,6 +71,46 @@ class EmployeesController < ApplicationController
       (current_year - 1) => @employee.events.where(event_type: 'congé', status: 'approuvé', start_date: Date.new(current_year - 1)..Date.new(current_year - 1).end_of_year).sum(:leave_days_count),
       current_year => @current_year_leaves.sum(:leave_days_count)
     }
+    @event = @employee.events.new # Initialisation pour éviter le nil
+    @expense = @employee.expenses.new # 👈 Définit une nouvelle note de frais
+
+    # Vérifier et définir l'année sélectionnée
+    @selected_year = params[:year].present? ? params[:year].to_i : Date.today.year
+
+    # Debug pour voir l'année sélectionnée
+    puts "🔍 Année sélectionnée : #{@selected_year}"
+
+    # Récupérer les dépenses approuvées de l'année sélectionnée
+    approved_expenses = Expense.where(employee: @employee, status: 'approuvé')
+                               .where("extract(year from date) = ?", @selected_year)
+                               .group("extract(month from date)")
+                               .sum(:amount)
+
+    puts "📊 Dépenses approuvées par mois (Raw SQL) : #{approved_expenses.inspect}"
+
+    # Assurer que tous les mois sont présents même si vides
+    @approved_expenses_by_month = Hash.new(0)
+
+    @employee.expenses.where(status: "approuvé", date: Date.new(@selected_year)..Date.new(@selected_year, 12, 31)).each do |expense|
+      month_index = expense.date.month - 1 # Mois de 1 à 12 => Index de 0 à 11
+      @approved_expenses_by_month[month_index] += expense.amount
+    end
+
+    # Assurer que tous les mois sont présents, même à 0 €
+    @approved_expenses_by_month = (0..11).map { |i| @approved_expenses_by_month[i] || 0 }
+    @expenses_json = @approved_expenses_by_month.to_json
+
+    puts "📊 Dépenses par mois envoyées à la vue : #{@approved_expenses_by_month.inspect}"
+
+    puts "📆 Année sélectionnée : #{@selected_year}"
+    puts "🔍 Dépenses trouvées avant regroupement :"
+    @employee.expenses.where(status: "approuvé", date: Date.new(@selected_year)..Date.new(@selected_year, 12, 31)).each do |expense|
+      puts "   - #{expense.date} : #{expense.amount} €"
+
+      @approved_expenses_by_month = (0..11).map do |i|
+        (@approved_expenses_by_month[i] || 0).to_f
+      end
+    end
   end
 
   def new
@@ -124,6 +182,23 @@ class EmployeesController < ApplicationController
     render json: { available: is_available }
   end
 
+  def expenses_by_year
+    @employee = Employee.find(params[:id])
+    year = params[:year].to_i
+
+    Rails.logger.debug "🔍 API expenses_by_year - Employee ID: #{params[:id]}, Year: #{year}"
+
+    start_date = Date.new(year, 1, 1)
+    end_date = Date.new(year, 12, 31)
+
+    approved_expenses = Array.new(12, 0)
+    @employee.expenses.where(status: 'approuvé', date: start_date..end_date).each do |expense|
+      approved_expenses[expense.date.month - 1] += expense.amount
+    end
+
+    render json: { year: year, expenses: approved_expenses }
+  end
+
 
   private
 
@@ -132,8 +207,7 @@ class EmployeesController < ApplicationController
   end
 
   def employee_params
-    params.require(:employee).permit(:firstname, :lastname, :address, :phone, :email, :group, :position, :hoursalary, default_days_off: [])
+    params.require(:employee).permit(:firstname, :lastname, :email, :phone, :address, :position, :group, :hoursalary, :admin)
   end
-
 
 end

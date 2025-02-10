@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", function() {
   fetch('/events/approved_overtime_hours')
     .then(response => response.json())
     .then(data => {
-      console.log("Total des heures supplémentaires validées :", data.total_overtime_hours);
+      //console.log("Total des heures supplémentaires validées :", data.total_overtime_hours);
       if (data.total_overtime_hours > 0 && employeeMenuItem) {
         const overtimeCounter = document.createElement('span');
         overtimeCounter.textContent = ` (${data.total_overtime_hours}h) `;

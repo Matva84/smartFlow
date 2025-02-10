@@ -1,6 +1,7 @@
 class EventsController < ApplicationController
   before_action :set_employee, only: [:new, :create, :destroy, :approve, :reject] # Si 'show' n'existe pas, cela cause l'erreur
   before_action :set_event, only: [:approve, :reject, :destroy]
+  before_action :check_admin, only: [:approve, :reject]
 
   def index
     @events = @employee.events.order(start_date: :asc)
@@ -81,4 +82,11 @@ class EventsController < ApplicationController
   def set_event
     @event = @employee.events.find(params[:id])
   end
+
+  def check_admin
+    unless current_user&.employee&.admin?
+      redirect_to employees_path, alert: "Accès refusé : vous devez être administrateur."
+    end
+  end
+
 end

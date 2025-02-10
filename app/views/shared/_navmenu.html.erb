@@ -62,21 +62,32 @@
   </ul>
 
   <div class="nav-lateral-menu-footer">
-    <img src="" alt="" class="avatar">
-    <div class="nav-lateral-menu-footer-text">
-        <% today = Date.today %>
-        <% if user_signed_in? %>
-          <p>Hello John 👋</p>
-          <p class="LightGrey"><%=today%></p>
-          <%= link_to "Log out", destroy_user_session_path, data: {turbo_method: :delete}, class: "dropdown-item" %>
-        <% else %>
-          <li class="nav-item">
-            <%= link_to "Login", new_user_session_path, class: "nav-link" %>
-          </li>
-        <% end %>
+    <% if user_signed_in? %>
+      <%= link_to employee_path(current_user.employee), class: "avatar-link" do %>
+        <div class="avatar" style="background-color: <%= session[:avatar_color] || '#ccc' %>;">
+          <%= user_initials(current_user) %>
+        </div>
+      <% end %>
+    <% end %>
 
-    </div>
 
+  <div class="nav-lateral-menu-footer-text">
+    <% today = Date.today %>
+    <% if user_signed_in? %>
+      <p>Hello <%= current_user.employee.firstname %> 👋</p>
+      <p class="LightGrey"><%= I18n.l(today, format: "%e %B %Y") %></p>
+<%= button_to destroy_user_session_path, method: :delete, class: "btn btn-lat-menu" do %>
+  <strong>Log out</strong>
+<% end %>
+
+
+
+    <% else %>
+      <li class="nav-item">
+        <%= link_to "Login", new_user_session_path, class: "nav-link" %>
+      </li>
+    <% end %>
   </div>
+</div>
 
 </div>

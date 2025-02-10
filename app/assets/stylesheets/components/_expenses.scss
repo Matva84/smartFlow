@@ -1,0 +1,58 @@
+.expense-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
+}
+
+.expense-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  font-size: 14px;
+}
+
+.expense-date {
+  font-weight: bold;
+  min-width: 80px;
+}
+
+.expense-amount {
+  font-weight: bold;
+  color: #333;
+  min-width: 100px;
+  text-align: right;
+}
+
+.expense-description {
+  flex-grow: 1;
+  padding: 0 10px;
+}
+
+.expense-status {
+  font-weight: bold;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+.expense-status.approved {
+  color: green;
+}
+
+.expense-status.rejected {
+  color: red;
+}
+
+.expense-status.pending {
+  color: orange;
+}
+
+.expense-delete {
+  color: red;
+  font-size: 18px;
+  cursor: pointer;
+}

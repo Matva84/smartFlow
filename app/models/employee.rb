@@ -3,6 +3,7 @@ class Employee < ApplicationRecord
   belongs_to :user
   has_many :events, dependent: :destroy
   has_and_belongs_to_many :projects
+  has_many :expenses, dependent: :destroy # 👈 Ajoute cette ligne
 
   # Validations
   validates :firstname, :lastname, :email, presence: true
@@ -12,10 +13,15 @@ class Employee < ApplicationRecord
   # Par défaut, les jours de congés sont samedi (6) et dimanche (0)
   after_initialize :set_default_days_off, if: :new_record?
   attribute :default_days_off, :integer, array: true, default: [0, 6]
-  
+
   # Exemple de méthode pour le nom complet
   def full_name
     "#{firstname} #{lastname}"
+  end
+
+  # Vérifie si l'employé est administrateur
+  def admin?
+    self.admin
   end
 
   # Méthode pour savoir si l'employé est présent un jour donné

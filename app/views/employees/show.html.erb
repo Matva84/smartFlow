@@ -1,4 +1,14 @@
 <!--<%= link_to "Retour à la liste", employees_path %>-->
+<% if @event && @event.errors.any? %>
+  <div class="alert alert-danger">
+    <h4>Erreur(s) lors de la création de l'événement :</h4>
+    <ul>
+      <% @event.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
 
 <div class="flexinline">
   <div class="halfwidth formdiv">
@@ -22,12 +32,12 @@
     <div class="nav-lateral-menu">
       <ul style="list-style-type: none;">
         <li>
-          <%= link_to new_employee_event_path(@employee), class: "btn btn-lat-menu" do %>
+          <%= link_to "#", class: "btn btn-lat-menu", id: "openModal" do %>
             <strong>Ajouter un événement (congé, télétravail, heures supp.)</strong>
           <% end %>
         </li>
         <li>
-          <%= link_to new_employee_event_path(@employee), class: "btn btn-lat-menu" do %>
+          <%= link_to "#", class: "btn btn-lat-menu", id: "openExpenseModal" do %>
             <strong>Ajouter une note de frais</strong>
           <% end %>
         </li>
@@ -48,8 +58,10 @@
               (<%= leave.part_of_day == 'morning' ? 'Matin' : 'Après-midi' %>)
             <% end %>
             <!-- Bouton pour supprimer l'événement -->
-            <%= button_to employee_event_path(@employee, leave), method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce congé ?" }, class: "btn btn-reject" do %>
-              <i class="fa-solid fa-xmark"></i>
+            <% if leave.start_date <= Date.today || (user_signed_in? && current_user.employee.admin?) %>
+              <%= button_to employee_event_path(@employee, leave), method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce congé ?" }, class: "btn btn-reject" do %>
+                <i class="fa-solid fa-xmark"></i>
+              <% end %>
             <% end %>
           </li>
         <% end %>
@@ -58,6 +70,23 @@
       <% end %>
     </ul>
   </div>
+    <div class="details formdiv">
+    <h3>Heures supplémentaires <%= Date.today.year %> </h3>
+      <ul class="flexincolleft">
+        <% @employee.events.where(event_type: 'heures_supplémentaires').each do |overtime| %>
+          <li class="flexinlineleft">
+            Le <%= l(overtime.start_date, format: "%d/%m") %> : <strong><%= overtime.overtime_hours %> heures</strong>
+            <% if overtime.start_date <= Date.today || (user_signed_in? && current_user.employee.admin?) %>
+              <%= button_to employee_event_path(@employee, overtime), method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cet arrêt maladie ?" }, class: "btn btn-reject" do %>
+                <i class="fa-solid fa-xmark"></i>
+              <% end %>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+  </div>
+</div>
+<div class="autoflexinline">
   <div class="details formdiv">
     <h3>Télétravail <%= Date.today.year %> :</h3>
     <ul class="flexincolleft">
@@ -70,8 +99,10 @@
             <% end %>
 
             <!-- Bouton pour supprimer l'événement -->
-            <%= button_to employee_event_path(@employee, telework), method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce jour de télétravail ?" }, class: "btn btn-reject" do %>
-              <i class="fa-solid fa-xmark"></i>
+            <% if telework.start_date <= Date.today || (user_signed_in? && current_user.employee.admin?) %>
+              <%= button_to employee_event_path(@employee, telework), method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce jour de télétravail ?" }, class: "btn btn-reject" do %>
+                <i class="fa-solid fa-xmark"></i>
+              <% end %>
             <% end %>
           </li>
         <% end %>
@@ -92,8 +123,10 @@
             <% end %>
 
             <!-- Bouton pour supprimer l'événement -->
-            <%= button_to employee_event_path(@employee, sick_leave), method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cet arrêt maladie ?" }, class: "btn btn-reject" do %>
-              <i class="fa-solid fa-xmark"></i>
+            <% if sick_leave.start_date <= Date.today || (user_signed_in? && current_user.employee.admin?) %>
+              <%= button_to employee_event_path(@employee, sick_leave), method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cet arrêt maladie ?" }, class: "btn btn-reject" do %>
+                <i class="fa-solid fa-xmark"></i>
+              <% end %>
             <% end %>
           </li>
         <% end %>
@@ -106,18 +139,74 @@
 
 <div class="autoflexinline">
   <div class="details formdiv">
-    <h3>Heures supplémentaires <%= Date.today.year %> </h3>
-      <ul class="flexincolleft">
-        <% @employee.events.where(event_type: 'heures_supplémentaires').each do |overtime| %>
-          <li class="flexinlineleft">
-            Le <%= l(overtime.start_date, format: "%d/%m") %> : <strong><%= overtime.overtime_hours %> heures</strong>
-            <%= button_to employee_event_path(@employee, overtime), method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cet arrêt maladie ?" }, class: "btn btn-reject" do %>
-              <i class="fa-solid fa-xmark"></i>
+    <h3>Notes de frais <%= Date.today.year %></h3>
+    <div class="expense-list">
+      <% if @employee.expenses.any? %>
+        <% @employee.expenses.each do |expense| %>
+          <div class="expense-item">
+            <span class="expense-date">
+              Le <%= expense.date.present? ? l(expense.date, format: "%d/%m") : "Date inconnue" %>
+            </span>
+            <span class="expense-amount">
+              <strong><%= number_to_currency(expense.amount, unit: "€") %></strong>
+            </span>
+            <span class="expense-description">
+              <%= expense.description %>
+            </span>
+            <span class="expense-status <%= expense.status.present? ? (expense.status == 'approuvé' ? 'approved' : expense.status == 'refusé' ? 'rejected' : 'pending') : 'pending' %>">
+              <%= expense.status.present? ? expense.status.capitalize : "En attente" %>
+            </span>
+
+            <% if expense.image.attached? %>
+              <span class="expense-view">
+                <%= link_to "Voir justificatif", url_for(expense.image), target: "_blank", class: "btn btn-view" %>
+              </span>
             <% end %>
-          </li>
+            <% if user_signed_in? && current_user.employee.admin? %>
+              <% if expense.id.present? %>
+                <span class="expense-delete">
+                <%= button_to employee_expense_path(@employee, expense), method: :delete,
+                  data: { confirm: "Êtes-vous sûr de vouloir supprimer cette note de frais ?" },
+                  class: "btn btn-reject" do %>
+                    <i class="fa-solid fa-xmark"></i>
+                  <% end %>
+                </span>
+              <% end %>
+            <% end %>
+          </div>
         <% end %>
-      </ul>
+      <% else %>
+        <div class="expense-empty">Aucune note de frais enregistrée cette année.</div>
+      <% end %>
+    </div>
   </div>
+  <div class="details formdiv">
+  <h3>Notes de frais - <span id="selectedYear"><%= @selected_year %></span></h3>
+
+  <div class="chart-container">
+    <!-- ID pour stocker les données -->
+    <div id="expensesChartData"
+         data-employee-id="<%= @employee.id %>"
+         data-expenses="<%= raw @approved_expenses_by_month.to_json %>">
+    </div>
+
+    <!-- Canvas du Graphique -->
+    <canvas id="expensesChart" width="400" height="200"></canvas>
+  </div>
+
+  <!-- Navigation des années -->
+  <div class="chart-navigation">
+    <div class="year-navigation">
+      <a href="#" id="prevYear" class="btn-filter">Année précédente</a>
+      <%#= button_tag "Année en cours", type: 'button', id: "currentYearBtn", class: "btn-filter" %>
+      <a href="#" id="nextYear" class="btn-filter">Année suivante</a>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="formdiv fullwidth">
   <div class="details formdiv">
     <h2>Congés antérieurs</h2>
     <ul class="flexincolleft">
@@ -132,21 +221,110 @@
   </div>
 </div>
 
-<!--
-<% @current_year_leaves.each do |leave| %>
-  <li class="flexinlineleft">
-    Du <%= l(leave.start_date, format: :long) %> au <%= l(leave.end_date, format: :long) %>
-    <% if leave.part_of_day.present? %>
-      (<%= leave.part_of_day == 'morning' ? 'Matinée' : 'Après-midi' %>)
+
+<!-- Modale pour ajouter un évenement -->
+<div id="eventModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2>Nouvel événement</h2>
+
+    <% if @event.errors.any? %>
+      <div class="alert alert-danger">
+        <h4>Erreur(s) lors de la création de l'événement :</h4>
+        <ul>
+          <% @event.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
     <% end %>
 
-    <span class="status <%= leave.status %>">
-      (<%= leave.status.humanize %>)
-    </span>
+    <%= form_with(model: [@employee, @event], local: true) do |form| %>
+      <div>
+        <%= form.label :event_type, "Type d'événement" %>
+        <%= form.select :event_type, [["Congé", "congé"], ["Télétravail", "télétravail"], ["Heures Supplémentaires", "heures_supplémentaires"], ["Arrêt Maladie", "arrêt_maladie"]], prompt: "Sélectionner un type", id: "event_type_select" %>
+      </div>
 
-    <% if leave.status == 'en_attente' %>
-      <%= button_to "Supprimer", employee_event_path(@employee, leave), method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce congé ?" }, class: "button-danger" %>
+      <div>
+        <%= form.label :start_date, "Date de début" %>
+        <%= form.date_field :start_date, id: "start_date_field", min: Date.today-31 %>
+      </div>
+
+      <div>
+        <%= form.label :end_date, "Date de fin" %>
+        <%= form.date_field :end_date, id: "end_date_field", min: Date.today-31 %>
+      </div>
+
+      <!-- Champ pour les heures supplémentaires -->
+      <div id="overtime_hours_field" style="display: none;">
+        <%= form.label :overtime_hours, "Nombre d'heures supplémentaires" %>
+        <%= form.number_field :overtime_hours, step: 0.5, min: 0, max: 8 %>
+      </div>
+
+      <!-- Champs pour matinée ou après-midi -->
+      <div id="part_of_day_fields" style="display: none;">
+        <%= form.label :part_of_day, "Moment de la journée" %><br>
+        <%= form.radio_button :part_of_day, "", checked: true, id: "part_of_day_full_day" %>
+        <%= form.label :part_of_day, "Journée entière", for: "part_of_day_full_day" %><br>
+        <%= form.radio_button :part_of_day, "morning", id: "part_of_day_morning" %>
+        <%= form.label :part_of_day, "Matinée", for: "part_of_day_morning" %><br>
+        <%= form.radio_button :part_of_day, "afternoon", id: "part_of_day_afternoon" %>
+        <%= form.label :part_of_day, "Après-midi", for: "part_of_day_afternoon" %>
+      </div>
+
+      <%= form.submit "Créer l'événement", class: "button" %>
     <% end %>
-  </li>
-<% end %>
--->
+  </div>
+</div>
+<!-- Modale pour Ajouter une Note de Frais -->
+<div id="expenseModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2>Nouvelle Note de Frais</h2>
+
+    <% if @expense && @expense.errors.any? %>
+      <div class="alert alert-danger">
+        <h4>Erreur(s) lors de la création de la note de frais :</h4>
+        <ul>
+          <% @expense.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <%= form_with(model: [@employee, @employee.expenses.new], local: true, html: { id: "expenseForm" }) do |form| %>
+      <div>
+        <%= form.label :amount, "Montant (€)" %>
+        <%= form.number_field :amount, step: 0.01, min: 0, required: true %>
+      </div>
+
+      <div>
+        <%= form.label :date, "Date" %>
+        <%= form.date_field :date,value: Date.today, required: true %>
+      </div>
+
+      <div>
+        <%= form.label :description, "Description" %>
+        <%= form.text_field :description, required: true %>
+      </div>
+
+      <div>
+        <%= form.label :image, "Justificatif (facultatif)" %>
+        <%= form.file_field :image, accept: "image/*" %>
+      </div>
+
+      <div>
+        <%= form.label :status, "Statut" %>
+        <%= form.select :status, [["En attente", "en_attente"], ["Approuvé", "approuvé"], ["Refusé", "refusé"]], selected: "en_attente", disabled: true %>
+      </div>
+
+      <div>
+        <%= form.label :fixed_expense, "Frais fixe (pris en compte chaque mois)" %>
+        <%= form.check_box :fixed_expense %>
+      </div>
+
+      <%= form.submit "Créer la note de frais", class: "button" %>
+    <% end %>
+  </div>
+</div>

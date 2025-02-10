@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_05_195138) do
+ActiveRecord::Schema[8.0].define(version: 2025_02_08_101617) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -67,6 +67,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_05_195138) do
     t.datetime "updated_at", null: false
     t.integer "default_days_off", default: [6, 0], array: true
     t.float "total_leaves_taken", default: 0.0
+    t.boolean "admin", default: false, null: false
     t.index ["user_id"], name: "index_employees_on_user_id"
   end
 
@@ -87,6 +88,19 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_05_195138) do
     t.string "status", default: "en_attente"
     t.decimal "overtime_hours"
     t.index ["employee_id"], name: "index_events_on_employee_id"
+  end
+
+  create_table "expenses", force: :cascade do |t|
+    t.bigint "employee_id", null: false
+    t.decimal "amount"
+    t.date "date"
+    t.text "description"
+    t.string "status"
+    t.string "image"
+    t.boolean "fixed"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["employee_id"], name: "index_expenses_on_employee_id"
   end
 
   create_table "items", force: :cascade do |t|
@@ -171,6 +185,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_05_195138) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "employees", "users"
   add_foreign_key "events", "employees"
+  add_foreign_key "expenses", "employees"
   add_foreign_key "items", "quotes"
   add_foreign_key "projects", "clients"
   add_foreign_key "quotes", "projects"

@@ -3,13 +3,13 @@
 <div class="employeeResume">
   <div class="formdiv fixedSize200">
     <h4>Nombre d'employés</h4>
-    <h3 class="txtcenter"><%= @employees.size %>/<%= @employees.size %></h3>
+    <h3 class="txtcenter"><%= @employees.size %></h3>
   </div>
 
   <div class="formdiv fixedSize200 onsite">
     <h4>Sur site</h4>
     <h3 class="txtcenter">
-      <%= @employees.size - @remote_count - @holiday_count - @sick_count %>
+      <%= @onsite_count %>
     </h3>
   </div>
 
@@ -20,7 +20,7 @@
 
   <div class="formdiv fixedSize200 holiday">
     <h4>En congés</h4>
-    <h3 class="txtcenter"><%= @holiday_count %></h3>
+    <h3 class="txtcenter"><%= @employees.size - @onsite_count - @sick_count - @remote_count %></h3>
   </div>
 
   <div class="formdiv fixedSize200 sick">
@@ -28,6 +28,7 @@
     <h3 class="txtcenter"><%= @sick_count %></h3>
   </div>
 </div>
+
 
 
 <div class="formdiv fullwidth">
@@ -70,7 +71,7 @@
     <thead>
     </thead>
     <tbody>
-    <% start_date = params[:start_date].present? ? Date.parse(params[:start_date]) : Date.today %>
+    <% start_date = params[:start_date].present? ? Date.parse(params[:start_date]) : Date.today.beginning_of_month %>
     <% end_date = params[:end_date].present? ? Date.parse(params[:end_date]) : Date.today.end_of_month %>
 
   <table class="tablePlanning">
@@ -93,47 +94,30 @@
     </thead>
     <tbody>
       <% @employees.each do |employee| %>
+        <% overtime_hours = employee.events.where(event_type: 'heures_supplémentaires', status: 'approuvé', start_date: start_date..end_date).sum(:overtime_hours) %>
+
         <tr>
-          <td><%= link_to "#{employee.lastname} #{employee.firstname}", employee_path(employee), class:"FirstCol link-text" %></td>
+          <td>
+            <%= link_to "#{employee.lastname} #{employee.firstname}", employee_path(employee), class: "FirstCol link-text #{'admin-highlight' if employee.admin?}" %>
+
+            <% if overtime_hours > 0 %>
+              <span class="overtime-info">(<%= overtime_hours %>h supp.)</span>
+            <% end %>
+          </td>
+
           <% (start_date..end_date).each do |date| %>
-            <%# event = employee.event_on(date) %>
             <% event = employee.events.where(status: 'approuvé').find { |e| e.start_date <= date && e.end_date >= date } %>
 
             <!-- Matin -->
-            <td style="
-              <% if employee.default_days_off&.include?(date.wday) %>
-                background-color: gray; color: white; font-weight: bold;
-              <% elsif event&.event_type == "arrêt_maladie" && event.part_of_day != 'afternoon' %>
-                background-color: var(--sick-color); color: white; font-weight: bold;
-              <% elsif event&.event_type == "télétravail" && event.part_of_day != 'afternoon' %>
-                background-color: var(--remote-color); color: white; font-weight: bold;
-              <% elsif event&.event_type == "congé" && event.part_of_day != 'afternoon' %>
-                background-color: var(--holiday-color); color: white; font-weight: bold;
-              <% else %>
-                background-color: white; color: black;
-              <% end %>
-            ">
-            </td>
+            <td style="<%= cell_style(employee, event, date, 'morning') %>"></td>
 
             <!-- Après-midi -->
-            <td style="
-              <% if employee.default_days_off&.include?(date.wday) %>
-                background-color: gray; color: white; font-weight: bold;
-              <% elsif event&.event_type == "arrêt_maladie" && event.part_of_day != 'morning' %>
-                background-color: var(--sick-color); color: white; font-weight: bold;
-              <% elsif event&.event_type == "télétravail" && event.part_of_day != 'morning' %>
-                background-color: var(--remote-color); color: white; font-weight: bold;
-              <% elsif event&.event_type == "congé" && event.part_of_day != 'morning' %>
-                background-color: var(--holiday-color); color: white; font-weight: bold;
-              <% else %>
-                background-color: white; color: black;
-              <% end %>
-            ">
-            </td>
+            <td style="<%= cell_style(employee, event, date, 'afternoon') %>"></td>
           <% end %>
         </tr>
       <% end %>
     </tbody>
+
   </table>
 
     </tbody>
@@ -176,8 +160,6 @@
       </div>
     </div>
 
-
-
     <table class="tableAnnuaire">
       <colgroup>
         <col style="width: 200px;"> <!-- Première colonne plus large -->
@@ -191,50 +173,55 @@
           <th>Congés <%= Date.today.year %></th>
         </tr>
       </thead>
-      <tbody>
-        <% @selected_employees.each do |employee| %>
-          <tr>
-            <td><%= link_to "#{employee.lastname} #{employee.firstname}", employee_path(employee), class: "link-text" %></td>
-            <td><%= employee.phone %></td>
+  <tbody>
+    <% @selected_employees.each do |employee| %>
+      <tr>
+        <td>
+          <%= link_to "#{employee.lastname} #{employee.firstname}", employee_path(employee), class: "link-text #{'admin-highlight' if employee.admin?}" %>
+          <% if employee.admin? %>
+            <strong>(Admin)</strong>
+          <% end %>
+        </td>
+        <td><%= employee.phone %></td>
 
-            <%# Calcul du nombre de congés pris pour l'année en cours %>
-            <% current_year = Date.today.year %>
-            <% leaves_taken = employee.events.where(event_type: 'congé', status: 'approuvé', start_date: Date.new(current_year)..Date.new(current_year).end_of_year).sum(:leave_days_count) %>
-            <td><%= leaves_taken %> jour(s)</td>
-<!--
-            <td>
-              <%#= link_to "Voir", employee_path(employee) %>
-              <%#= link_to "Modifier", edit_employee_path(employee) %>
-              <%#= link_to "Supprimer", employee_path(employee), data: { turbo_method: :delete, turbo_confirm: "Êtes-vous sûr ?" } %>
-            </td>
-            -->
-          </tr>
-        <% end %>
-      </tbody>
+        <%# Calcul du nombre de congés pris pour l'année en cours %>
+        <% current_year = Date.today.year %>
+        <% leaves_taken = employee.events.where(event_type: 'congé', status: 'approuvé', start_date: Date.new(current_year)..Date.new(current_year).end_of_year).sum(:leave_days_count) %>
+        <td><%= leaves_taken %> jour(s)</td>
+      </tr>
+    <% end %>
+  </tbody>
+
     </table>
 
 
-      <%= link_to "Ajouter un employé", new_employee_path, class: "link-button"  %>
+      <% if user_signed_in? && current_user.employee.admin? %>
+        <!-- Bouton pour ajouter un employé (réservé aux admins) -->
+        <%= link_to "Ajouter un employé", new_employee_path, class: "link-button" %>
+      <% end %>
+
   </div>
 
-  <div class="halfwidth formdiv">
-    <h3>Demandes en attente</h3>
-    <ul class="flexincolleft">
-      <% if Event.where(status: 'en_attente').present? %>
-        <% Event.where(status: 'en_attente').each do |event| %>
-          <li class="flexinlineleft">
-            <div>
-              <%= event.employee.firstname %> <%= event.employee.lastname %> :
-                <% if event.event_type == 'heures_supplémentaires' %>
-                  Heures sup le <%= l(event.start_date, format: "%d/%m") %> - <%= event.overtime_hours %> h
-                <% else %>
-                  <%= event.event_type.capitalize %>
-                  <% if event.start_date == event.end_date && event.part_of_day.present? %>
-                    (<%= event.part_of_day == "morning" ? "Matin" : "Après-midi" %>)
-                  <% end %>
-                  du <%= l(event.start_date, format: "%d/%m") %> au <%= l(event.end_date, format: "%d/%m") %>
+  <div class="halfwidth formdiv asks">
+  <h3>Demandes en attente</h3>
+  <ul class="flexincolleft">
+    <% if Event.where(status: 'en_attente').present? %>
+      <% Event.where(status: 'en_attente').each do |event| %>
+        <li class="flexinlineleft">
+          <div>
+            <%= event.employee.firstname %> <%= event.employee.lastname %> :
+              <% if event.event_type == 'heures_supplémentaires' %>
+                Heures sup le <%= l(event.start_date, format: "%d/%m") %> - <%= event.overtime_hours %> h
+              <% else %>
+                <%= event.event_type.capitalize %>
+                <% if event.start_date == event.end_date && event.part_of_day.present? %>
+                  (<%= event.part_of_day == "morning" ? "Matin" : "Après-midi" %>)
                 <% end %>
-            </div>
+                du <%= l(event.start_date, format: "%d/%m") %> au <%= l(event.end_date, format: "%d/%m") %>
+              <% end %>
+          </div>
+
+          <% if user_signed_in? && current_user.employee.admin? %>
             <div class="btn-inline">
               <%= button_to approve_employee_event_path(event.employee, event), method: :patch, class: "btn btn-approve" do %>
                 <i class="fa-solid fa-check"></i>
@@ -244,12 +231,54 @@
                 <i class="fa-solid fa-xmark"></i>
               <% end %>
             </div>
-          </li>
-        <% end %>
-      <% else %>
-        <li class="flexinlineleft">Aucune demande en attente.</li>
+          <% end %>
+        </li>
       <% end %>
+    <% else %>
+      <li class="flexinlineleft">Aucune demande en attente.</li>
+    <% end %>
+  </ul>
+</div>
 
-    </ul>
-  </div>
+</div>
+
+<div class="halfwidth formdiv asks">
+  <h3>Notes de frais en attente</h3>
+  <ul class="flexincolleft">
+    <% pending_expenses = Expense.where(status: "en_attente").includes(:employee) %>
+
+    <% if pending_expenses.any? %>
+      <% pending_expenses.each do |expense| %>
+        <li class="flexinlineleft">
+          <div>
+            <%= expense.employee.firstname %> <%= expense.employee.lastname %> :
+            <strong><%= number_to_currency(expense.amount, unit: "€") %></strong>
+            - <%= expense.description %>
+            (<%= l(expense.date, format: "%d/%m/%Y") %>)
+
+            <% if expense.image.attached? %>
+              <br>📎 <%= link_to "Justificatif", expense.image, target: "_blank" %>
+            <% end %>
+          </div>
+
+          <% if user_signed_in? && current_user.employee.admin? %>
+            <div class="btn-inline">
+              <% if expense.id.present? %>
+                <%= button_to approve_employee_expense_path(expense.employee, expense), method: :patch, class: "btn btn-approve" do %>
+                  <i class="fa-solid fa-check"></i>
+                <% end %>
+              <% end %>
+
+
+              <%= button_to reject_employee_expense_path(expense.employee, expense), method: :patch, class: "btn btn-reject", data: { confirm: "Voulez-vous refuser cette note de frais ?" } do %>
+                <i class="fa-solid fa-xmark"></i>
+              <% end %>
+            </div>
+          <% end %>
+        </li>
+      <% end %>
+    <% else %>
+      <li class="flexinlineleft">Aucune note de frais en attente.</li>
+    <% end %>
+  </ul>
 </div>

@@ -41,6 +41,13 @@
     <%= form.number_field :hoursalary, step: 0.01 %>
   </div>
 
+<div>
+  <%= form.label :admin, "Administrateur" %>
+  <%= form.hidden_field :admin, value: false %> <!-- Assure que "false" est envoyé si la case est décochée -->
+  <%= form.check_box :admin %>
+</div>
+
+
   <div>
     <%= form.label :default_days_off, "Jours de congé par défaut" %><br>
 

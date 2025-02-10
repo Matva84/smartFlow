@@ -1,0 +1,28 @@
+<%= form_with(model: [@employee, @expense], local: true) do |form| %>
+  <div>
+    <%= form.label :date, "Date" %>
+    <%= form.date_field :date, required: true %>
+  </div>
+
+  <div>
+    <%= form.label :amount, "Montant (€)" %>
+    <%= form.number_field :amount, step: 0.01, required: true %>
+  </div>
+
+  <div>
+    <%= form.label :description, "Description" %>
+    <%= form.text_area :description, required: true %>
+  </div>
+
+  <div>
+    <%= form.label :fixed, "Frais fixe ?" %>
+    <%= form.check_box :fixed %>
+  </div>
+
+  <div>
+    <%= form.label :image, "Justificatif (facultatif)" %>
+    <%= form.file_field :image %>
+  </div>
+
+  <%= form.submit "Enregistrer", class: "button" %>
+<% end %>

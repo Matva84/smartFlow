@@ -60,7 +60,20 @@ Rails.application.routes.draw do
       get :approved_overtime_hours
     end
   end
+  resources :employees do
+    resources :expenses do
+      member do
+        patch :approve
+        patch :reject
+      end
+    end
+  end
 
+  resources :employees do
+    member do
+      get 'expenses_by_year'
+    end
+  end
 
 
 end
