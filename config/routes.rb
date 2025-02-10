@@ -2,7 +2,8 @@ Rails.application.routes.draw do
   get "events/index"
   get "events/new"
   get "events/create"
-  root to: "pages#home"
+  root "pages#home"
+  get "/home", to: "pages#home"
   get "pages/about"
   get "pages/contact"
   devise_for :users
@@ -74,6 +75,14 @@ Rails.application.routes.draw do
       get 'expenses_by_year'
     end
   end
+  resources :expenses, except: [:show] do
+    collection do
+      get :pending_count2
+      get :global_expenses_by_date
+    end
+  end
+
+
 
 
 end

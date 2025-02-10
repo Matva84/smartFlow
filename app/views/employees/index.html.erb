@@ -255,21 +255,18 @@
             <strong><%= number_to_currency(expense.amount, unit: "€") %></strong>
             - <%= expense.description %>
             (<%= l(expense.date, format: "%d/%m/%Y") %>)
-
-            <% if expense.image.attached? %>
-              <br>📎 <%= link_to "Justificatif", expense.image, target: "_blank" %>
-            <% end %>
           </div>
 
           <% if user_signed_in? && current_user.employee.admin? %>
             <div class="btn-inline">
               <% if expense.id.present? %>
+                <% if expense.image.attached? %>
+                  <%= button_to "📎", expense.image, method: :get, class: "btn", form: { target: "_blank" } %>
+                <% end %>
                 <%= button_to approve_employee_expense_path(expense.employee, expense), method: :patch, class: "btn btn-approve" do %>
                   <i class="fa-solid fa-check"></i>
                 <% end %>
               <% end %>
-
-
               <%= button_to reject_employee_expense_path(expense.employee, expense), method: :patch, class: "btn btn-reject", data: { confirm: "Voulez-vous refuser cette note de frais ?" } do %>
                 <i class="fa-solid fa-xmark"></i>
               <% end %>

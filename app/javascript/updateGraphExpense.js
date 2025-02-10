@@ -74,8 +74,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
   function updateChart(newData, year) {
     // Calcul de la somme annuelle des dépenses
-    const annualTotal = newData.reduce((acc, value) => acc + value, 0);
-
+    const annualTotal = newData.reduce((acc, value) => acc + parseFloat(value), 0);
+    //console.log(annualTotal);
     // Vérifier et détruire tout graphique existant sur le canvas
     const existingChart = Chart.getChart("expensesChart");
     if (existingChart) {
@@ -114,13 +114,11 @@ document.addEventListener("DOMContentLoaded", function() {
           }
         }
       },
-
     });
 
     // Mise à jour de l'affichage dans le titre de la vue
     updateYearDisplay(year, annualTotal);
   }
-
 
 
   // Chargement initial avec l'année sélectionnée

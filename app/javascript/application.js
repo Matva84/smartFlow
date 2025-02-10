@@ -5,6 +5,7 @@ import "./modaleEvent";
 import "./modaleExpense";
 import "./graphExpense";
 import "./updateGraphExpense";
+import "./global_expenses_chart";
 import Chartkick from "chartkick"
 
 // Chart.js est déjà inclus via le CDN dans le layout

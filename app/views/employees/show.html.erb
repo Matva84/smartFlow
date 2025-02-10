@@ -159,7 +159,8 @@
 
             <% if expense.image.attached? %>
               <span class="expense-view">
-                <%= link_to "Voir justificatif", url_for(expense.image), target: "_blank", class: "btn btn-view" %>
+                <%#= link_to "Voir justificatif", url_for(expense.image), target: "_blank", class: "btn btn-view" %>
+                <%= button_to "📎", expense.image, method: :get, class: "btn", form: { target: "_blank" } %>
               </span>
             <% end %>
             <% if user_signed_in? && current_user.employee.admin? %>
