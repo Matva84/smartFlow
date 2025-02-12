@@ -36,7 +36,11 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :settings, only: [:index, :edit, :update]
+  resources :settings, only: [:index, :edit, :update] do
+    collection do
+      patch :update_multiple
+    end
+  end
 
   resources :employees do
     resources :events do
@@ -81,8 +85,5 @@ Rails.application.routes.draw do
       get :global_expenses_by_date
     end
   end
-
-
-
 
 end

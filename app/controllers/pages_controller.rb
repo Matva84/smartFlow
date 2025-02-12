@@ -1,8 +1,9 @@
 class PagesController < ApplicationController
-  before_action :authenticate_user!, except: [:home]
+  before_action :authenticate_user!#, except: [:home]
 
   def home
     start_date = params[:start_date].present? ? Date.parse(params[:start_date]) : Date.today.beginning_of_year
+    @start_date = start_date.strftime('%Y-%m-%d')  # Format requis pour <input type="date">
     end_date = Date.today.end_of_year
 
     @expenses_by_employee = {}
@@ -24,9 +25,10 @@ class PagesController < ApplicationController
     if @expenses_by_employee.empty?
       Rails.logger.error "❌ ERREUR : Aucune donnée de notes de frais trouvée pour les employés."
     end
-    puts "🔍 JSON envoyé à la vue : #{@expenses_by_employee.to_json}"
 
+    puts "🔍 JSON envoyé à la vue : #{@expenses_by_employee.to_json}"
   end
+
 
 
     def expenses_by_employee

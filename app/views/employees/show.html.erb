@@ -316,11 +316,6 @@
       </div>
 
       <div>
-        <%= form.label :status, "Statut" %>
-        <%= form.select :status, [["En attente", "en_attente"], ["Approuvé", "approuvé"], ["Refusé", "refusé"]], selected: "en_attente", disabled: true %>
-      </div>
-
-      <div>
         <%= form.label :fixed_expense, "Frais fixe (pris en compte chaque mois)" %>
         <%= form.check_box :fixed_expense %>
       </div>

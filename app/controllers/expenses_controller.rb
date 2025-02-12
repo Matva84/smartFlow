@@ -1,4 +1,5 @@
 class ExpensesController < ApplicationController
+  before_action :authenticate_user!
   before_action :set_employee, except: [:pending_count2, :global_expenses_by_date] # 🚀 EXCLUSION DE pending_count2
   before_action :set_expense, only: [:edit, :update, :destroy, :approve, :reject]
 

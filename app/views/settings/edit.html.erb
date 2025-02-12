@@ -1,17 +1,30 @@
-<h1>Modifier le paramètre</h1>
+<h1>Paramètres</h1>
 
-<%= form_with(model: @setting, local: true) do |form| %>
-  <div class="mb-3">
-    <%= form.label :key, "Clé", class: "form-label" %>
-    <%= form.text_field :key, class: "form-control", readonly: true %>
-  </div>
-
-  <div class="mb-3">
-    <%= form.label :value, "Valeur", class: "form-label" %>
-    <%= form.text_field :value, class: "form-control" %>
-  </div>
-
-  <%= form.submit "Enregistrer", class: "btn btn-primary" %>
-<% end %>
-
-<%= link_to "Retour aux paramètres", settings_path, class: "btn btn-secondary" %>
+<table class="table">
+  <thead>
+    <tr>
+      <th>Clé</th>
+      <th>Valeur</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @settings.each do |setting| %>
+      <tr>
+        <td><%= setting.label.humanize %></td>
+        <td>
+          <% if setting.value_type == "boolean" %>
+            <%= check_box_tag nil, "1", setting.parsed_value, disabled: true %>
+          <% elsif setting.value_type == "float" %>
+            <%= number_with_precision(setting.parsed_value, precision: 2) %>
+          <% else %>
+            <%= setting.value %>
+          <% end %>
+        </td>
+        <td>
+          <%= link_to "Modifier", edit_setting_path(setting), class: "btn btn-warning btn-sm" %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

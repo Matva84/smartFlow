@@ -1,4 +1,5 @@
 class EventsController < ApplicationController
+  before_action :authenticate_user!
   before_action :set_employee, only: [:new, :create, :destroy, :approve, :reject] # Si 'show' n'existe pas, cela cause l'erreur
   before_action :set_event, only: [:approve, :reject, :destroy]
   before_action :check_admin, only: [:approve, :reject]
