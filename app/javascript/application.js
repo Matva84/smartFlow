@@ -6,11 +6,11 @@ import "./modaleExpense";
 import "./graphExpense";
 import "./updateGraphExpense";
 import "./global_expenses_chart";
+import "./channels/communication_channel";
+import "./channels/employee_chat";
+import "./channels/consumer";
+//import "./overTime";
 import Chartkick from "chartkick"
 
 // Chart.js est déjà inclus via le CDN dans le layout
 Chartkick.use(window.Chart)
-
-
-
-//import "./overTime";

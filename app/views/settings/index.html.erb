@@ -1,19 +1,31 @@
-<% @settings.each do |setting| %>
-  <tr>
-    <td><%= setting.label.humanize %></td>
-    <td>
-      <% case setting.value_type
-         when "boolean" %>
-        <%= hidden_field_tag "settings[#{setting.id}]", "0" %>
-        <%= check_box_tag "settings[#{setting.id}]", "1", setting.parsed_value %>
-      <% when "float" %>
-        <%= number_field_tag "settings[#{setting.id}]", setting.parsed_value, step: "any" %>
-      <% else %>
-        <%= text_field_tag "settings[#{setting.id}]", setting.value %>
+<h1>Paramètres</h1>
+
+<%= form_with url: update_multiple_settings_path, method: :patch, local: true do %>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Clé</th>
+        <th>Valeur</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @settings.each do |setting| %>
+        <tr>
+          <td><%= setting.label.humanize %></td>
+          <td>
+            <% case setting.value_type
+               when "boolean" %>
+                <%= hidden_field_tag "settings[#{setting.id}]", "0" %>
+                <%= check_box_tag "settings[#{setting.id}]", "1", setting.parsed_value %>
+            <% when "float" %>
+                <%= number_field_tag "settings[#{setting.id}]", setting.parsed_value, step: "any" %>
+            <% else %>
+                <%= text_field_tag "settings[#{setting.id}]", setting.value %>
+            <% end %>
+          </td>
+        </tr>
       <% end %>
-    </td>
-    <td>
-      <%= link_to "Modifier", edit_setting_path(setting), class: "btn btn-warning btn-sm" %>
-    </td>
-  </tr>
+    </tbody>
+  </table>
+  <%= submit_tag "Valider", class: "btn btn-primary" %>
 <% end %>

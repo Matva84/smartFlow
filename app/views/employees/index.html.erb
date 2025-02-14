@@ -242,40 +242,42 @@
 
 </div>
 
-<div class="halfwidth formdiv asks">
-  <h3>Notes de frais en attente</h3>
-  <ul class="flexincolleft">
-    <% pending_expenses = Expense.where(status: "en_attente").includes(:employee) %>
+<% if Setting.find_by(key: 'expenses_enabled')&.parsed_value %>
+  <div class="halfwidth formdiv asks">
+    <h3>Notes de frais en attente</h3>
+    <ul class="flexincolleft">
+      <% pending_expenses = Expense.where(status: "en_attente").includes(:employee) %>
 
-    <% if pending_expenses.any? %>
-      <% pending_expenses.each do |expense| %>
-        <li class="flexinlineleft">
-          <div>
-            <%= expense.employee.firstname %> <%= expense.employee.lastname %> :
-            <strong><%= number_to_currency(expense.amount, unit: "€") %></strong>
-            - <%= expense.description %>
-            (<%= l(expense.date, format: "%d/%m/%Y") %>)
-          </div>
-
-          <% if user_signed_in? && current_user.employee.admin? %>
-            <div class="btn-inline">
-              <% if expense.id.present? %>
-                <% if expense.image.attached? %>
-                  <%= button_to "📎", expense.image, method: :get, class: "btn", form: { target: "_blank" } %>
-                <% end %>
-                <%= button_to approve_employee_expense_path(expense.employee, expense), method: :patch, class: "btn btn-approve" do %>
-                  <i class="fa-solid fa-check"></i>
-                <% end %>
-              <% end %>
-              <%= button_to reject_employee_expense_path(expense.employee, expense), method: :patch, class: "btn btn-reject", data: { confirm: "Voulez-vous refuser cette note de frais ?" } do %>
-                <i class="fa-solid fa-xmark"></i>
-              <% end %>
+      <% if pending_expenses.any? %>
+        <% pending_expenses.each do |expense| %>
+          <li class="flexinlineleft">
+            <div>
+              <%= expense.employee.firstname %> <%= expense.employee.lastname %> :
+              <strong><%= number_to_currency(expense.amount, unit: "€") %></strong>
+              - <%= expense.description %>
+              (<%= l(expense.date, format: "%d/%m/%Y") %>)
             </div>
-          <% end %>
-        </li>
+
+            <% if user_signed_in? && current_user.employee.admin? %>
+              <div class="btn-inline">
+                <% if expense.id.present? %>
+                  <% if expense.image.attached? %>
+                    <%= button_to "📎", expense.image, method: :get, class: "btn", form: { target: "_blank" } %>
+                  <% end %>
+                  <%= button_to approve_employee_expense_path(expense.employee, expense), method: :patch, class: "btn btn-approve" do %>
+                    <i class="fa-solid fa-check"></i>
+                  <% end %>
+                <% end %>
+                <%= button_to reject_employee_expense_path(expense.employee, expense), method: :patch, class: "btn btn-reject", data: { confirm: "Voulez-vous refuser cette note de frais ?" } do %>
+                  <i class="fa-solid fa-xmark"></i>
+                <% end %>
+              </div>
+            <% end %>
+          </li>
+        <% end %>
+      <% else %>
+        <li class="flexinlineleft">Aucune note de frais en attente.</li>
       <% end %>
-    <% else %>
-      <li class="flexinlineleft">Aucune note de frais en attente.</li>
-    <% end %>
-  </ul>
-</div>
+    </ul>
+  </div>
+<% end %>

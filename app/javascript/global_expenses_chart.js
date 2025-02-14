@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function() {
-  console.log("🚀 DOM chargé, initialisation du graphique...");
+  //console.log("🚀 DOM chargé, initialisation du graphique...");
 
   var expensesDataElement = document.getElementById("expensesChartData");
 
@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
   var rawData = expensesDataElement.getAttribute("data-expenses");
 
-  console.log("📜 Données brutes récupérées (avant JSON.parse) :", rawData);
+  //console.log("📜 Données brutes récupérées (avant JSON.parse) :", rawData);
 
   if (!rawData || rawData.trim() === "") {
     console.error("❌ ERREUR : Aucune donnée trouvée !");
@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function() {
     rawData = rawData.replace(/&quot;/g, '"');
 
     expensesByEmployee = JSON.parse(rawData);
-    console.log("📊 Données JSON après parsing :", expensesByEmployee);
+    //console.log("📊 Données JSON après parsing :", expensesByEmployee);
   } catch (error) {
     console.error("❌ ERREUR : Impossible de parser les données JSON :", error, "\nDonnées brutes:", rawData);
     return;
@@ -110,14 +110,14 @@ document.addEventListener("DOMContentLoaded", function() {
       }
     });
 
-    console.log("✅ Graphique mis à jour !");
+    //console.log("✅ Graphique mis à jour !");
   }
 
 
 
   function generateChart(data) {
     if (expensesChart) {
-      console.log("🗑️ Suppression de l'ancien graphique...");
+      //console.log("🗑️ Suppression de l'ancien graphique...");
       expensesChart.destroy();
     }
 
@@ -182,7 +182,7 @@ document.addEventListener("DOMContentLoaded", function() {
       }
     });
 
-    console.log("✅ Graphique mis à jour !");
+    //console.log("✅ Graphique mis à jour !");
   }
 
   // Générer le graphique initial
@@ -196,7 +196,7 @@ document.addEventListener("DOMContentLoaded", function() {
       return;
     }
 
-    console.log(`🔄 Mise à jour du graphique avec les dépenses depuis ${selectedDate}...`);
+    //console.log(`🔄 Mise à jour du graphique avec les dépenses depuis ${selectedDate}...`);
 
     fetch(`/expenses/global_expenses_by_date?start_date=${selectedDate}`)
       .then(response => {
@@ -206,7 +206,7 @@ document.addEventListener("DOMContentLoaded", function() {
         return response.json();
       })
       .then(data => {
-        console.log("✅ Données mises à jour :", data);
+        //console.log("✅ Données mises à jour :", data);
         updateChart(data);
       })
       .catch(error => console.error("❌ ERREUR : Impossible de récupérer les nouvelles données :", error));

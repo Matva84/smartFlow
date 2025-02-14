@@ -1,80 +1,83 @@
-<h1>Détails du projet</h1>
-
-<p><strong>Nom :</strong> <%= @project.name %></p>
-<p><strong>Description :</strong> <%= @project.description %></p>
-<p><strong>Adresse :</strong> <%= @project.address %></p>
-<p><strong>Date de début :</strong> <%= l(@project.start_at, format: :long) %></p>
-<p><strong>Date de fin :</strong> <%= l(@project.end_at, format: :long) %></p>
-
-<hr>
-
-<h2>Informations du client</h2>
-
-<% if @project.client %>
-  <div class="card">
-    <div class="card-body">
-      <p><strong>Nom :</strong>
-        <%= link_to "#{@project.client.firstname} #{@project.client.lastname}", client_path(@project.client), class: "text-decoration-none" %>
-      </p>
-      <p><strong>Adresse :</strong> <%= @project.client.address %></p>
-      <p><strong>Email :</strong> <%= @project.client.email %></p>
-      <p><strong>Téléphone :</strong> <%= @project.client.phone %></p>
-      <p><strong>RIB :</strong> <%= @project.client.rib %></p>
-    </div>
+<div class="autoflexinline">
+  <div class="details formdiv">
+    <h1>Détails du projet</h1>
+    <p><strong>Nom :</strong> <%= @project.name %></p>
+    <p><strong>Description :</strong> <%= @project.description %></p>
+    <p><strong>Adresse :</strong> <%= @project.address %></p>
+    <p><strong>Date de début :</strong> <%= l(@project.start_at, format: :long) %></p>
+    <p><strong>Date de fin :</strong> <%= l(@project.end_at, format: :long) %></p>
   </div>
-<% else %>
-  <p><em>Aucun client n'est associé à ce projet.</em></p>
-<% end %>
 
-<hr>
+  <div class="details formdiv">
+    <h2>Informations du client</h2>
 
-<h2>Employés assignés</h2>
-
-<%= form_with url: assign_employees_project_path(@project), method: :patch, local: true do |form| %>
-  <ul>
-    <% @employees.each do |employee| %>
-      <li>
-        <%= check_box_tag "employee_ids[]", employee.id, @project.employees.include?(employee) %>
-        <%= link_to "#{employee.firstname} #{employee.lastname}", employee_path(employee), class: "text-decoration-none" %>
-      </li>
+    <% if @project.client %>
+      <div class="card">
+        <div class="card-body">
+          <p><strong>Nom :</strong>
+            <%= link_to "#{@project.client.firstname} #{@project.client.lastname}", client_path(@project.client), class: "text-decoration-none" %>
+          </p>
+          <p><strong>Adresse :</strong> <%= @project.client.address %></p>
+          <p><strong>Email :</strong> <%= @project.client.email %></p>
+          <p><strong>Téléphone :</strong> <%= @project.client.phone %></p>
+          <p><strong>RIB :</strong> <%= @project.client.rib %></p>
+        </div>
+      </div>
+    <% else %>
+      <p><em>Aucun client n'est associé à ce projet.</em></p>
     <% end %>
-  </ul>
-  <%= form.submit "Mettre à jour les employés", class: "btn btn-primary" %>
-<% end %>
+  </div>
+</div>
 
-<hr>
+<div class="autoflexinline">
+  <div class="details formdiv">
+    <h2>Employés assignés</h2>
+    <%= form_with url: assign_employees_project_path(@project), method: :patch, local: true do |form| %>
+      <ul>
+        <% @employees.each do |employee| %>
+          <li>
+            <%= check_box_tag "employee_ids[]", employee.id, @project.employees.include?(employee) %>
+            <%= link_to "#{employee.firstname} #{employee.lastname}", employee_path(employee), class: "text-decoration-none" %>
+          </li>
+        <% end %>
+      </ul>
+      <%= form.submit "Mettre à jour les employés", class: "btn btn-primary" %>
+    <% end %>
+  </div>
 
-<h2>Devis associés</h2>
+  <div class="details formdiv">
+    <h2>Devis associés</h2>
+    <% if @project.quotes.any? %>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Numéro</th>
+            <th>Statut</th>
+            <th>Total</th>
+            <th>Date de création</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @project.quotes.each do |quote| %>
+            <tr>
+              <td>
+                <%= link_to quote.number, quote_path(quote), class: "text-decoration-none" %>
+              </td>
+              <td><%= quote.status %></td>
+              <td><%= number_to_currency(quote.total, unit: "€") %></td>
+              <td><%= l(quote.created_at, format: :short) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% else %>
+      <p>Aucun devis associé à ce projet.</p>
+    <% end %>
 
-<% if @project.quotes.any? %>
-  <table class="table table-striped">
-    <thead>
-      <tr>
-        <th>Numéro</th>
-        <th>Statut</th>
-        <th>Total</th>
-        <th>Date de création</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @project.quotes.each do |quote| %>
-        <tr>
-          <td>
-            <%= link_to quote.number, quote_path(quote), class: "text-decoration-none" %>
-          </td>
-          <td><%= quote.status %></td>
-          <td><%= number_to_currency(quote.total, unit: "€") %></td>
-          <td><%= l(quote.created_at, format: :short) %></td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
-<% else %>
-  <p>Aucun devis associé à ce projet.</p>
-<% end %>
+    <hr>
 
-<hr>
-
-<%= link_to "Modifier", edit_project_path(@project), class: "btn btn-secondary" %>
-<%= link_to "Retour à la liste", projects_path, class: "btn btn-secondary" %>
-<%= button_to "Supprimer", project_path(@project), method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce projet ?" }, class: "btn btn-danger" %>
+    <%= link_to "Modifier", edit_project_path(@project), class: "btn btn-secondary" %>
+    <%= link_to "Retour à la liste", projects_path, class: "btn btn-secondary" %>
+    <%= button_to "Supprimer", project_path(@project), method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce projet ?" }, class: "btn btn-danger" %>
+  </div>
+</div>

@@ -36,11 +36,13 @@
             <strong>Ajouter un événement (congé, télétravail, heures supp.)</strong>
           <% end %>
         </li>
-        <li>
-          <%= link_to "#", class: "btn btn-lat-menu", id: "openExpenseModal" do %>
-            <strong>Ajouter une note de frais</strong>
-          <% end %>
-        </li>
+        <% if Setting.find_by(key: 'expenses_enabled')&.parsed_value %>
+          <li>
+            <%= link_to "#", class: "btn btn-lat-menu", id: "openExpenseModal" do %>
+              <strong>Ajouter une note de frais</strong>
+            <% end %>
+          </li>
+        <% end %>
       </ul>
     </div>
   </div>
@@ -137,77 +139,79 @@
   </div>
 </div>
 
-<div class="autoflexinline">
-  <div class="details formdiv">
-    <h3>Notes de frais <%= Date.today.year %></h3>
-    <div class="expense-list">
-      <% if @employee.expenses.any? %>
-        <% @employee.expenses.each do |expense| %>
-          <div class="expense-item">
-            <span class="expense-date">
-              Le <%= expense.date.present? ? l(expense.date, format: "%d/%m") : "Date inconnue" %>
-            </span>
-            <span class="expense-amount">
-              <strong><%= number_to_currency(expense.amount, unit: "€") %></strong>
-            </span>
-            <span class="expense-description">
-              <%= expense.description %>
-            </span>
-            <span class="expense-status <%= expense.status.present? ? (expense.status == 'approuvé' ? 'approved' : expense.status == 'refusé' ? 'rejected' : 'pending') : 'pending' %>">
-              <%= expense.status.present? ? expense.status.capitalize : "En attente" %>
-            </span>
-
-            <% if expense.image.attached? %>
-              <span class="expense-view">
-                <%#= link_to "Voir justificatif", url_for(expense.image), target: "_blank", class: "btn btn-view" %>
-                <%= button_to "📎", expense.image, method: :get, class: "btn", form: { target: "_blank" } %>
+<% if Setting.find_by(key: 'expenses_enabled')&.parsed_value %>
+  <div class="autoflexinline">
+    <div class="details formdiv">
+      <h3>Notes de frais <%= Date.today.year %></h3>
+      <div class="expense-list">
+        <% if @employee.expenses.any? %>
+          <% @employee.expenses.each do |expense| %>
+            <div class="expense-item">
+              <span class="expense-date">
+                Le <%= expense.date.present? ? l(expense.date, format: "%d/%m") : "Date inconnue" %>
               </span>
-            <% end %>
-            <% if user_signed_in? && current_user.employee.admin? %>
-              <% if expense.id.present? %>
-                <span class="expense-delete">
-                <%= button_to employee_expense_path(@employee, expense), method: :delete,
-                  data: { confirm: "Êtes-vous sûr de vouloir supprimer cette note de frais ?" },
-                  class: "btn btn-reject" do %>
-                    <i class="fa-solid fa-xmark"></i>
-                  <% end %>
+              <span class="expense-amount">
+                <strong><%= number_to_currency(expense.amount, unit: "€") %></strong>
+              </span>
+              <span class="expense-description">
+                <%= expense.description %>
+              </span>
+              <span class="expense-status <%= expense.status.present? ? (expense.status == 'approuvé' ? 'approved' : expense.status == 'refusé' ? 'rejected' : 'pending') : 'pending' %>">
+                <%= expense.status.present? ? expense.status.capitalize : "En attente" %>
+              </span>
+
+              <% if expense.image.attached? %>
+                <span class="expense-view">
+                  <%#= link_to "Voir justificatif", url_for(expense.image), target: "_blank", class: "btn btn-view" %>
+                  <%= button_to "📎", expense.image, method: :get, class: "btn", form: { target: "_blank" } %>
                 </span>
               <% end %>
-            <% end %>
-          </div>
+              <% if user_signed_in? && current_user.employee.admin? %>
+                <% if expense.id.present? %>
+                  <span class="expense-delete">
+                  <%= button_to employee_expense_path(@employee, expense), method: :delete,
+                    data: { confirm: "Êtes-vous sûr de vouloir supprimer cette note de frais ?" },
+                    class: "btn btn-reject" do %>
+                      <i class="fa-solid fa-xmark"></i>
+                    <% end %>
+                  </span>
+                <% end %>
+              <% end %>
+            </div>
+          <% end %>
+        <% else %>
+          <div class="expense-empty">Aucune note de frais enregistrée cette année.</div>
         <% end %>
-      <% else %>
-        <div class="expense-empty">Aucune note de frais enregistrée cette année.</div>
-      <% end %>
+      </div>
+    </div>
+    <div class="details formdiv">
+    <h3>Notes de frais - <span id="selectedYear"><%= @selected_year %></span></h3>
+
+    <div class="chart-container">
+      <!-- ID pour stocker les données -->
+      <div id="expensesChartData"
+          data-employee-id="<%= @employee.id %>"
+          data-expenses="<%= raw @approved_expenses_by_month.to_json %>">
+      </div>
+
+      <!-- Canvas du Graphique -->
+      <canvas id="expensesChart" width="400" height="200"></canvas>
+    </div>
+
+    <!-- Navigation des années -->
+    <div class="chart-navigation">
+      <div class="year-navigation">
+        <a href="#" id="prevYear" class="btn-filter">Année précédente</a>
+        <%#= button_tag "Année en cours", type: 'button', id: "currentYearBtn", class: "btn-filter" %>
+        <a href="#" id="nextYear" class="btn-filter">Année suivante</a>
+      </div>
     </div>
   </div>
-  <div class="details formdiv">
-  <h3>Notes de frais - <span id="selectedYear"><%= @selected_year %></span></h3>
 
-  <div class="chart-container">
-    <!-- ID pour stocker les données -->
-    <div id="expensesChartData"
-         data-employee-id="<%= @employee.id %>"
-         data-expenses="<%= raw @approved_expenses_by_month.to_json %>">
-    </div>
-
-    <!-- Canvas du Graphique -->
-    <canvas id="expensesChart" width="400" height="200"></canvas>
   </div>
+<% end %>
 
-  <!-- Navigation des années -->
-  <div class="chart-navigation">
-    <div class="year-navigation">
-      <a href="#" id="prevYear" class="btn-filter">Année précédente</a>
-      <%#= button_tag "Année en cours", type: 'button', id: "currentYearBtn", class: "btn-filter" %>
-      <a href="#" id="nextYear" class="btn-filter">Année suivante</a>
-    </div>
-  </div>
-</div>
-
-</div>
-
-<div class="formdiv fullwidth">
+<div class="autoflexinline">
   <div class="details formdiv">
     <h2>Congés antérieurs</h2>
     <ul class="flexincolleft">
@@ -222,6 +226,18 @@
   </div>
 </div>
 
+<div class="formdiv fullwidth">
+  <h1>Chat</h1>
+    <div id="chat">
+    <div id="messages" style="border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: auto;">
+      <!-- Les messages reçus s'afficheront ici -->
+    </div>
+    <form id="new_message" action="#">
+      <input type="text" id="message_content" placeholder="Tapez votre message..." autocomplete="off" required>
+      <button type="submit">Envoyer</button>
+    </form>
+  </div>
+</div>
 
 <!-- Modale pour ajouter un évenement -->
 <div id="eventModal" class="modal">

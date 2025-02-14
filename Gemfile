@@ -54,6 +54,7 @@ gem 'faker'
 gem 'whenever'
 gem 'chartkick'
 gem 'groupdate'
+gem 'redis'
 
 
 group :development, :test do
