@@ -19,6 +19,13 @@
     <%= form.check_box :fixed %>
   </div>
 
+  <!-- Champ de sélection pour la catégorie -->
+  <div>
+    <%= form.label :category, "Catégorie" %>
+    <%= form.select :category, options_for_select(@categories, @expense.category), prompt: "Sélectionner une catégorie", id: "category-select" %>
+    <button type="button" id="new-category-button">Nouvelle catégorie</button>
+  </div>
+
   <div>
     <%= form.label :image, "Justificatif (facultatif)" %>
     <%= form.file_field :image %>
@@ -26,3 +33,28 @@
 
   <%= form.submit "Enregistrer", class: "button" %>
 <% end %>
+
+<!-- Code JavaScript pour gérer la popup de création d'une nouvelle catégorie -->
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    var newCategoryButton = document.getElementById("new-category-button");
+    newCategoryButton.addEventListener("click", function() {
+      var newCategory = prompt("Entrez le nom de la nouvelle catégorie :");
+      if (newCategory) {
+        var select = document.getElementById("category-select");
+        // Vérifier si la catégorie existe déjà
+        var exists = Array.from(select.options).some(function(option) {
+          return option.value === newCategory;
+        });
+        if (!exists) {
+          var option = document.createElement("option");
+          option.text = newCategory;
+          option.value = newCategory;
+          select.add(option);
+        }
+        // Sélectionner la nouvelle catégorie
+        select.value = newCategory;
+      }
+    });
+  });
+</script>

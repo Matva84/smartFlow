@@ -6,6 +6,7 @@ class Expense < ApplicationRecord
   validates :date, presence: true
   validates :description, presence: true
   validates :status, inclusion: { in: ["en_attente", "approuvé", "refusé"] }
+  validates :category, presence: true
 
   scope :fixed, -> { where(fixed_expense: true) }
 
@@ -17,7 +18,8 @@ class Expense < ApplicationRecord
         date: Date.today.beginning_of_month, # Début du mois
         description: expense.description,
         status: 'en attente', # Toujours en attente avant validation
-        fixed_expense: true
+        fixed_expense: true,
+        category: 'Non classée'
       )
     end
   end

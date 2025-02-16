@@ -334,12 +334,24 @@
 
       <div>
         <%= form.label :date, "Date" %>
-        <%= form.date_field :date,value: Date.today, required: true %>
+        <%= form.date_field :date, value: Date.today, required: true %>
       </div>
 
       <div>
         <%= form.label :description, "Description" %>
         <%= form.text_field :description, required: true %>
+      </div>
+
+      <!-- Bloc pour la catégorie -->
+      <div>
+        <%= form.label :category, "Catégorie" %>
+        <% categories = Expense.select(:category).distinct.pluck(:category) %>
+        <% categories << 'Non classée' unless categories.include?('Non classée') %>
+        <%= form.select :category,
+                options_for_select(categories, 'Non classée'),
+                { prompt: "Sélectionnez une catégorie" },
+                { id: "category-select" } %>
+        <button type="button" id="new-category-button">Nouvelle catégorie</button>
       </div>
 
       <div>

@@ -7,8 +7,13 @@ class ExpensesController < ApplicationController
     @expenses = @employee.expenses.order(date: :desc)
   end
 
+  #def new
+  #  @expense = @employee.expenses.new
+  #end
   def new
-    @expense = @employee.expenses.new
+    @expense = @employee.expenses.new(category: 'Non classée')
+    @categories = @employee.expenses.select(:category).distinct.pluck(:category)
+    @categories << 'Non classée' unless @categories.include?('Non classée')
   end
 
   def create
@@ -22,7 +27,11 @@ class ExpensesController < ApplicationController
     end
   end
 
-  def edit; end
+  #def edit; end
+  def edit
+    @categories = @employee.expenses.select(:category).distinct.pluck(:category)
+    @categories << 'Non classée' unless @categories.include?('Non classée')
+  end
 
   def update
     if @expense.update(expense_params)
@@ -125,9 +134,8 @@ class ExpensesController < ApplicationController
     end
   end
 
-
-
   def expense_params
-    params.require(:expense).permit(:amount, :date, :description, :image, :status, :fixed)
+    params.require(:expense).permit(:amount, :date, :description, :image, :status, :fixed, :category)
   end
+
 end
