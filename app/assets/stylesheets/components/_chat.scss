@@ -1,0 +1,65 @@
+.message-container {
+  margin-bottom: 10px;
+  clear: both;
+}
+.message-container.self {
+  text-align: right;
+}
+.message-container.other {
+  text-align: left;
+}
+.message-bubble {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  max-width: 70%;
+}
+.message-container.self .message-bubble {
+  background-color: #007aff;
+  color: white;
+}
+.message-container.other .message-bubble {
+  background-color: #e5e5ea;
+  color: black;
+}
+.message-timestamp {
+  font-size: 10px;
+  color: #555;
+  margin-top: 4px;
+}
+/* Style pour le champ de saisie façon bulle iPhone */
+#message_input_container {
+  margin-top: 10px;
+}
+#message_content {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #ccc;
+  border-radius: 25px;
+  font-size: 16px;
+  box-sizing: border-box;
+  outline: none;
+}
+#message_content:focus {
+  border-color: #007aff;
+}
+#messages:after {
+  content: "";
+  display: block;
+  clear: both;
+}
+
+/* Pour la page employé : messages envoyés par l'utilisateur connecté en bleu */
+.chat-employee .message-container.self .message-bubble {
+  background-color: #007aff;  /* bleu iOS */
+}
+
+/* Pour la page client : messages envoyés par l'utilisateur connecté en vert */
+.chat-customer .message-container.self .message-bubble {
+  background-color: #28a745;  /* vert bootstrap par exemple */
+}
+
+/* Pour la page projet : messages envoyés par l'utilisateur connecté en violet */
+.chat-project .message-container.self .message-bubble {
+  background-color: #6f42c1;  /* violet */
+}

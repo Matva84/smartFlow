@@ -2,7 +2,8 @@ class Project < ApplicationRecord
   belongs_to :client
   has_and_belongs_to_many :employees
   has_many :quotes, dependent: :destroy
-
+  has_many :messages, as: :messageable, dependent: :destroy
+  
   # Validations
   validates :name, :description, :address, :start_at, :end_at, presence: true
   #validates :totalbudget, presence: true

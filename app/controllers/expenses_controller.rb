@@ -38,15 +38,15 @@ class ExpensesController < ApplicationController
   end
 
   def approve
-    Rails.logger.debug "🟢 DEBUG: L'action approve est appelée avec params: #{params.inspect}"
+    #Rails.logger.debug "🟢 DEBUG: L'action approve est appelée avec params: #{params.inspect}"
 
     # Vérifie que set_expense est bien exécuté
-    Rails.logger.debug "🟡 Vérification: @expense avant set_expense = #{@expense.inspect}"
+    #Rails.logger.debug "🟡 Vérification: @expense avant set_expense = #{@expense.inspect}"
 
     # Charge directement l'expense
     @expense = Expense.find_by(id: params[:id])
 
-    Rails.logger.debug "🔍 Après recherche dans la DB: @expense = #{@expense.inspect}"
+    #Rails.logger.debug "🔍 Après recherche dans la DB: @expense = #{@expense.inspect}"
 
     if @expense.nil?
       Rails.logger.error "❌ ERREUR: L'expense avec ID=#{params[:id]} n'existe pas."
@@ -54,7 +54,7 @@ class ExpensesController < ApplicationController
     end
 
     if @expense.update(status: 'approuvé')
-      Rails.logger.info "✅ L'expense ID=#{@expense.id} a été approuvée."
+      #Rails.logger.info "✅ L'expense ID=#{@expense.id} a été approuvée."
       redirect_to employees_path, notice: "La note de frais a été approuvée."
     else
       Rails.logger.error "❌ Échec de l'approbation pour l'expense ID=#{@expense.id}."

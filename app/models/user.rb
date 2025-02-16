@@ -6,7 +6,7 @@ class User < ApplicationRecord
 
   # Associations
   has_one :employee, dependent: :destroy
-
+  has_many :messages, dependent: :destroy
   # Validations
   validates :role, presence: true, inclusion: { in: %w[admin employee customer] } # Exemple de rôles
 end

@@ -6,7 +6,11 @@ class ClientsController < ApplicationController
     @clients = Client.all
   end
 
-  def show; end
+  def show
+    @client = Client.find(params[:id])
+    @messages = Message.where(messageable: @client).order(created_at: :asc)
+    Rails.logger.debug "Messages pour le client #{@client.id} : #{@messages.inspect}"
+  end
 
   def new
     @client = Client.new

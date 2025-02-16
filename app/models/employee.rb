@@ -3,7 +3,8 @@ class Employee < ApplicationRecord
   belongs_to :user
   has_many :events, dependent: :destroy
   has_and_belongs_to_many :projects
-  has_many :expenses, dependent: :destroy # 👈 Ajoute cette ligne
+  has_many :messages, as: :messageable, dependent: :destroy
+  has_many :expenses, dependent: :destroy
 
   # Validations
   validates :firstname, :lastname, :email, presence: true

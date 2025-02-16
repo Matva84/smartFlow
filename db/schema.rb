@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_11_174915) do
+ActiveRecord::Schema[8.0].define(version: 2025_02_16_105908) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -126,6 +126,20 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_11_174915) do
     t.index ["quote_id"], name: "index_items_on_quote_id"
   end
 
+  create_table "messages", force: :cascade do |t|
+    t.text "content"
+    t.bigint "user_id", null: false
+    t.bigint "employee_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "messageable_type"
+    t.bigint "messageable_id"
+    t.string "full_name"
+    t.index ["employee_id"], name: "index_messages_on_employee_id"
+    t.index ["messageable_type", "messageable_id"], name: "index_messages_on_messageable"
+    t.index ["user_id"], name: "index_messages_on_user_id"
+  end
+
   create_table "projects", force: :cascade do |t|
     t.string "name"
     t.text "description"
@@ -189,6 +203,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_11_174915) do
   add_foreign_key "events", "employees"
   add_foreign_key "expenses", "employees"
   add_foreign_key "items", "quotes"
+  add_foreign_key "messages", "employees"
+  add_foreign_key "messages", "users"
   add_foreign_key "projects", "clients"
   add_foreign_key "quotes", "projects"
 end

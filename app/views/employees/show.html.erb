@@ -227,16 +227,32 @@
 </div>
 
 <div class="formdiv fullwidth">
-  <h1>Chat</h1>
-    <div id="chat">
-    <div id="messages" style="border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: auto;">
-      <!-- Les messages reçus s'afficheront ici -->
-    </div>
-    <form id="new_message" action="#">
-      <input type="text" id="message_content" placeholder="Tapez votre message..." autocomplete="off" required>
-      <button type="submit">Envoyer</button>
-    </form>
+
+ <div id="chat-data"
+     data-messageable-type="Employee"
+     data-messageable-id="<%= @employee.id %>"
+     data-current-user-email="<%= current_user.email %>">
   </div>
+
+  <div id="messages" class="chat-employee" style="border: 0px solid #ccc; padding: 10px; height: 300px; overflow-y: auto;">
+    <% (@messages || []).each do |msg| %>
+      <div class="message-container <%= msg.user.email == current_user.email ? 'self' : 'other' %>">
+        <div class="message-bubble">
+          <%= msg.content %>
+        </div>
+        <div class="message-timestamp">
+          <%= msg.full_name %> - <%= msg.created_at.strftime("%d/%m à %H:%M") %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <form id="new_message" action="#">
+    <div id="message_input_container">
+      <input type="text" id="message_content" placeholder="Taper votre message" autocomplete="off" required>
+    </div>
+  </form>
+
 </div>
 
 <!-- Modale pour ajouter un évenement -->

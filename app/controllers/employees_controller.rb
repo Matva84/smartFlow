@@ -78,7 +78,7 @@ class EmployeesController < ApplicationController
     @selected_year = params[:year].present? ? params[:year].to_i : Date.today.year
 
     # Debug pour voir l'année sélectionnée
-    puts "🔍 Année sélectionnée : #{@selected_year}"
+    #puts "🔍 Année sélectionnée : #{@selected_year}"
 
     # Récupérer les dépenses approuvées de l'année sélectionnée
     approved_expenses = Expense.where(employee: @employee, status: 'approuvé')
@@ -86,7 +86,7 @@ class EmployeesController < ApplicationController
                                .group("extract(month from date)")
                                .sum(:amount)
 
-    puts "📊 Dépenses approuvées par mois (Raw SQL) : #{approved_expenses.inspect}"
+    #puts "📊 Dépenses approuvées par mois (Raw SQL) : #{approved_expenses.inspect}"
 
     # Assurer que tous les mois sont présents même si vides
     @approved_expenses_by_month = Hash.new(0)
@@ -100,17 +100,19 @@ class EmployeesController < ApplicationController
     @approved_expenses_by_month = (0..11).map { |i| @approved_expenses_by_month[i] || 0 }
     @expenses_json = @approved_expenses_by_month.to_json
 
-    puts "📊 Dépenses par mois envoyées à la vue : #{@approved_expenses_by_month.inspect}"
+    #puts "📊 Dépenses par mois envoyées à la vue : #{@approved_expenses_by_month.inspect}"
 
-    puts "📆 Année sélectionnée : #{@selected_year}"
-    puts "🔍 Dépenses trouvées avant regroupement :"
+    #puts "📆 Année sélectionnée : #{@selected_year}"
+    #puts "🔍 Dépenses trouvées avant regroupement :"
     @employee.expenses.where(status: "approuvé", date: Date.new(@selected_year)..Date.new(@selected_year, 12, 31)).each do |expense|
-      puts "   - #{expense.date} : #{expense.amount} €"
+      #puts "   - #{expense.date} : #{expense.amount} €"
 
       @approved_expenses_by_month = (0..11).map do |i|
         (@approved_expenses_by_month[i] || 0).to_f
       end
     end
+    @messages = Message.where(messageable: @employee).order(created_at: :asc)
+    Rails.logger.debug "Messages archivés pour l'employé #{@employee.id} : #{@messages.inspect}"
   end
 
   def new
@@ -118,8 +120,8 @@ class EmployeesController < ApplicationController
   end
 
   def create
-    Rails.logger.info "===== Début de la méthode create ====="
-    Rails.logger.info "Params reçus : #{params.inspect}"
+    #Rails.logger.info "===== Début de la méthode create ====="
+    #Rails.logger.info "Params reçus : #{params.inspect}"
 
     # Créer ou récupérer l'utilisateur associé
     user_email = params[:employee][:email]
@@ -147,13 +149,13 @@ class EmployeesController < ApplicationController
     @employee.position = params[:employee][:new_position].presence || @employee.position
 
     if @employee.save
-      Rails.logger.info "Employé créé avec succès : #{@employee.inspect}"
+      #Rails.logger.info "Employé créé avec succès : #{@employee.inspect}"
       redirect_to employees_path, notice: "Employé créé avec succès"
     else
       Rails.logger.error "Erreur lors de la sauvegarde de l'employé : #{@employee.errors.full_messages.join(", ")}"
       render :new, status: :unprocessable_entity
     end
-    Rails.logger.info "===== Fin de la méthode create ====="
+    #Rails.logger.info "===== Fin de la méthode create ====="
   end
 
 
@@ -186,7 +188,7 @@ class EmployeesController < ApplicationController
     @employee = Employee.find(params[:id])
     year = params[:year].to_i
 
-    Rails.logger.debug "🔍 API expenses_by_year - Employee ID: #{params[:id]}, Year: #{year}"
+    #Rails.logger.debug "🔍 API expenses_by_year - Employee ID: #{params[:id]}, Year: #{year}"
 
     start_date = Date.new(year, 1, 1)
     end_date = Date.new(year, 12, 31)

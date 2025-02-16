@@ -11,6 +11,8 @@ class ProjectsController < ApplicationController
 
   def show
     @employees = Employee.all
+    @project = Project.find(params[:id])
+    @messages = Message.where(messageable: @project).order(created_at: :asc)
   end
 
   def new

@@ -10,3 +10,31 @@
 <%= link_to "Modifier", edit_client_path(@client) %> |
 <%= link_to "Retour à la liste", clients_path %> |
 <%= button_to "Supprimer", client_path(@client), method: :delete, data: { confirm: "Êtes-vous sûr ?" } %>
+
+<div class="formdiv fullwidth">
+
+ <div id="chat-data"
+     data-messageable-type="Client"
+     data-messageable-id="<%= @client.id %>"
+     data-current-user-email="<%= current_user.email %>"></div>
+
+  <div id="messages" class="chat-customer" style="border: 0px solid #ccc; padding: 10px; height: 300px; overflow-y: auto;">
+    <% (@messages || []).each do |msg| %>
+      <div class="message-container <%= msg.user.email == current_user.email ? 'self' : 'other' %>">
+        <div class="message-bubble">
+          <%= msg.content %>
+        </div>
+        <div class="message-timestamp">
+          <%= msg.full_name %> - <%= msg.created_at.strftime("%d/%m à %H:%M") %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <form id="new_message" action="#">
+    <div id="message_input_container">
+      <input type="text" id="message_content" placeholder="Taper votre message" autocomplete="off" required>
+    </div>
+  </form>
+
+</div>
