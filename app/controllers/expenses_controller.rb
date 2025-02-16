@@ -76,7 +76,7 @@ class ExpensesController < ApplicationController
     render json: { pending_expenses_count: pending_expenses_count }
   end
 
-  def global_expenses_by_date
+  def global_expenses_by_date_old
     start_date = params[:start_date].present? ? Date.parse(params[:start_date]) : Date.today.beginning_of_year
     end_date = Date.today
 
@@ -108,6 +108,52 @@ class ExpensesController < ApplicationController
 
     render json: { labels: labels, data: formatted_expenses, totals: totals }
   end
+
+  def global_expenses_by_date
+    start_date = params[:start_date].present? ? Date.parse(params[:start_date]) : Date.today.beginning_of_year
+    end_date = params[:end_date].present? ? Date.parse(params[:end_date]) : Date.today
+
+    # Récupérer toutes les dépenses approuvées depuis start_date
+    expenses = Expense.includes(:employee)
+                      .where("date >= ?", start_date)
+                      .where(status: 'approuvé')
+
+    # Calcul des dépenses mensuelles par employé pour le graphique
+    months = (start_date..end_date).map { |d| Date.new(d.year, d.month, 1) }.uniq
+    expenses_by_employee = expenses.group_by(&:employee)
+    formatted_expenses = {}
+    totals = {}
+    expenses_by_employee.each do |employee, exps|
+      amounts = months.map { |m| exps.select { |e| Date.new(e.date.year, e.date.month, 1) == m }.sum(&:amount) }
+      formatted_expenses[employee.full_name] = amounts
+      totals[employee.full_name] = amounts.sum
+    end
+
+    # Préparation des données pour le tableau par catégorie
+    # Récupérer la liste de toutes les catégories existantes dans les dépenses
+    categories = expenses.pluck(:category).uniq
+
+    # Pour chaque employé, grouper les dépenses par catégorie et calculer la somme
+    expenses_by_category = {}
+    expenses_by_employee.each do |employee, exps|
+      emp_name = employee.full_name
+      expenses_by_category[emp_name] = {}
+      categories.each do |cat|
+        expenses_by_category[emp_name][cat] = exps.select { |e| e.category == cat }.sum(&:amount)
+      end
+    end
+
+    render json: {
+      labels: months.map { |m| m.strftime("%b %Y") },
+      data: formatted_expenses,
+      totals: totals,
+      table: {
+        categories: categories,
+        data: expenses_by_category
+      }
+    }
+  end
+
 
 
 
