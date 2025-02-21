@@ -11,6 +11,7 @@ import "./global_expenses_chart";
 import "./channels/consumer";
 import "./channels/chat";
 import "./expenseCategory";
+//import "./interactiveCard";
 
 import "@rails/actioncable"
 //import "./overTime";

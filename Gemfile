@@ -55,7 +55,7 @@ gem 'whenever'
 gem 'chartkick'
 gem 'groupdate'
 gem 'redis'
-
+gem 'geocoder'
 
 group :development, :test do
   gem "dotenv-rails"

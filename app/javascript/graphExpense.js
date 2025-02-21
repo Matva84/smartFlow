@@ -106,8 +106,17 @@ document.addEventListener("DOMContentLoaded", function() {
     var tbody = table.querySelector("tbody");
 
     // Réinitialiser l'en-tête et le corps du tableau
-    thead.innerHTML = "<th>Employé</th>";
+    thead.innerHTML = "";
     tbody.innerHTML = "";
+
+    // Construire la première ligne de l'en-tête : Employé + Total
+    var thEmployee = document.createElement("th");
+    thEmployee.innerText = "Employé";
+    thead.appendChild(thEmployee);
+
+    var thTotal = document.createElement("th");
+    thTotal.innerText = "Total";
+    thead.appendChild(thTotal);
 
     // Ajouter les colonnes pour chaque catégorie
     tableData.categories.forEach(function(cat) {
@@ -120,10 +129,23 @@ document.addEventListener("DOMContentLoaded", function() {
     Object.keys(tableData.data).forEach(function(employee) {
       var row = document.createElement("tr");
 
+      // Nom de l'employé
       var tdName = document.createElement("td");
       tdName.innerText = employee;
       row.appendChild(tdName);
 
+      // Calcul du total pour cet employé
+      var total = 0;
+      tableData.categories.forEach(function(cat) {
+        total += tableData.data[employee][cat] || 0;
+      });
+
+      // Colonne Total
+      var tdTotal = document.createElement("td");
+      tdTotal.innerText = total;
+      row.appendChild(tdTotal);
+
+      // Colonnes par catégorie
       tableData.categories.forEach(function(cat) {
         var td = document.createElement("td");
         // Affiche 0 si aucune dépense dans la catégorie
@@ -135,6 +157,7 @@ document.addEventListener("DOMContentLoaded", function() {
     });
     console.log("updateTable - Tableau mis à jour.");
   }
+
 
   // Chargement initial dès que la page est prête
   console.log("Chargement initial des données globales...");

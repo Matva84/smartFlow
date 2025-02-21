@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_16_163528) do
+ActiveRecord::Schema[8.0].define(version: 2025_02_21_201904) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -51,6 +51,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_16_163528) do
     t.string "rib"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.float "latitude"
+    t.float "longitude"
   end
 
   create_table "employees", force: :cascade do |t|
@@ -136,6 +138,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_16_163528) do
     t.string "messageable_type"
     t.bigint "messageable_id"
     t.string "full_name"
+    t.datetime "read_at"
+    t.integer "recipient_id"
     t.index ["employee_id"], name: "index_messages_on_employee_id"
     t.index ["messageable_type", "messageable_id"], name: "index_messages_on_messageable"
     t.index ["user_id"], name: "index_messages_on_user_id"

@@ -29,8 +29,6 @@
   </div>
 </div>
 
-
-
 <div class="formdiv fullwidth">
   <%= form_with url: employees_path, method: :get, local: true, html: { id: "filter-form" } do %>
     <div class="filter-container">
@@ -202,7 +200,7 @@
 
   </div>
 
-  <div class="halfwidth formdiv asks">
+  <div class="halfwidth formdiv toBeHiddenForEmployees">
   <h3>Demandes en attente</h3>
   <ul class="flexincolleft">
     <% if Event.where(status: 'en_attente').present? %>
@@ -243,7 +241,7 @@
 </div>
 
 <% if Setting.find_by(key: 'expenses_enabled')&.parsed_value %>
-  <div class="halfwidth formdiv asks">
+  <div class="halfwidth formdiv toBeHiddenForEmployees">
     <h3>Notes de frais en attente</h3>
     <ul class="flexincolleft">
       <% pending_expenses = Expense.where(status: "en_attente").includes(:employee) %>

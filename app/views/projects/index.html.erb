@@ -1,19 +1,26 @@
-<div class="formdiv fullwidth">
+<% if user_signed_in? && current_user.employee.admin? %>
 
-  <table>
-    <tbody>
-      <% @projects.each do |project| %>
-        <tr>
-          <td><%= link_to "#{project.name}", project_path(project), class:"link-text" %></td>
-          <td><%= link_to "#{project.client.lastname} #{project.client.firstname}", project_path(project), class:"link-text" %></td>
-          <td><%= project.client.phone %></td>
-          <td><%= project.start_at %></td>
-          <td><%= project.end_at %></td>
-          <td><%= project.progression %> %</td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
+  <div class="formdiv fullwidth">
 
-  <%= link_to "Créer un nouveau projet", new_project_path, class: "link-button"  %>
-</div>
+    <table>
+      <tbody>
+        <% @projects.each do |project| %>
+          <tr>
+            <td><%= link_to "#{project.name}", project_path(project), class:"link-text" %></td>
+            <td><%= link_to "#{project.client.lastname} #{project.client.firstname}", project_path(project), class:"link-text" %></td>
+            <td><%= project.client.phone %></td>
+            <td><%= project.start_at %></td>
+            <td><%= project.end_at %></td>
+            <td><%= project.progression %> %</td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+
+    <%= link_to "Créer un nouveau projet", new_project_path, class: "link-button"  %>
+  </div>
+<% else %>
+  <div class="details formdiv" style="height: 400px;">
+    <h1>Vous n'êtes pas autorisé à voir cette page.</h1>
+  </div>
+<% end %>

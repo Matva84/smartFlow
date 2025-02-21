@@ -3,8 +3,18 @@ class ClientsController < ApplicationController
   before_action :set_client, only: [:show, :edit, :update, :destroy]
 
   def index
-    @clients = Client.all
+    @clients = case params[:filter]
+               when 'completed'
+                 Client.joins(:projects).where(projects: { progression: 100 })
+               when 'in_progress'
+                 Client.joins(:projects).where("projects.progression > 0 AND projects.progression < 100")
+               when 'not_started'
+                 Client.joins(:projects).where(projects: { progression: 0 })
+               else
+                 Client.all
+               end
   end
+
 
   def show
     @client = Client.find(params[:id])

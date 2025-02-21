@@ -1,57 +1,64 @@
-<% if Setting.find_by(key: 'expenses_enabled')&.parsed_value %>
-  <div class="details formdiv">
-    <h3>Notes de frais - Tous les employés</h3>
+<% if user_signed_in? && current_user.employee.admin? %>
 
-    <!-- Sélecteurs de date et boutons de filtre rapide -->
-    <div class="filter-container">
-       <!-- Boutons pour un filtrage rapide -->
-      <button id="currentYear" class="btn-filter">Année en cours</button>
-      <button id="currentMonth" class="btn-filter">Mois en cours</button>
+  <% if Setting.find_by(key: 'expenses_enabled')&.parsed_value %>
+    <div class="details formdiv" style="height: 400px;">
+      <h3>Notes de frais - Tous les employés</h3>
 
-      <label for="start_date">Afficher les dépenses depuis :</label>
-      <input type="date" id="start_date" value="<%= @start_date %>">
+      <!-- Sélecteurs de date et boutons de filtre rapide -->
+      <div class="filter-container">
+        <!-- Boutons pour un filtrage rapide -->
+        <button id="currentYear" class="btn-filter">Année en cours</button>
+        <button id="currentMonth" class="btn-filter">Mois en cours</button>
 
-      <label for="end_date">Jusqu'au :</label>
-      <input type="date" id="end_date" value="<%= @end_date || Date.today.to_s %>">
+        <label for="start_date">Afficher les dépenses depuis :</label>
+        <input type="date" id="start_date" value="<%= @start_date %>">
 
-      <button id="updateChart" class="btn-filter">Mettre à jour</button>
+        <label for="end_date">Jusqu'au :</label>
+        <input type="date" id="end_date" value="<%= @end_date || Date.today.to_s %>">
 
-    </div>
+        <button id="updateChart" class="btn-filter">Mettre à jour</button>
 
-    <div id="expensesChartData"
-      data-expenses="<%= @expenses_by_employee.to_json.gsub('"', '&quot;') %>">
-    </div>
-
-    <!-- Conteneur Flex pour disposer le graphique à gauche et le tableau à droite -->
-    <div class="expenses-layout" style="display: flex; flex-wrap: wrap; gap: 20px;">
-      <!-- Graphique à gauche -->
-      <div class="chart-container" style="position: relative; flex: 1; max-height: 250px;">
-        <h3>Dépenses par employé</h3>
-        <div id="globalExpensesChartData"
-             data-expenses="<%= raw @expenses_by_employee.to_json %>"
-             data-start-date="<%= @start_date %>">
-        </div>
-        <div id="expensesChartData"
-             data-expenses="<%= @expenses_by_employee.to_json.gsub('"', '&quot;') %>">
-        </div>
-        <canvas id="expensesChart" width="400" height="150"></canvas>
       </div>
 
-      <!-- Tableau à droite -->
-      <div class="table-container" style="flex: 1;">
-        <h3>Dépenses par catégorie</h3>
-        <table id="expensesCategoryTable" class="table">
-          <thead>
-            <tr>
-              <th>Employé</th>
-              <!-- Les catégories seront ajoutées dynamiquement via JavaScript -->
-            </tr>
-          </thead>
-          <tbody>
-            <!-- Les lignes du tableau seront générées en JS -->
-          </tbody>
-        </table>
+      <div id="expensesChartData"
+        data-expenses="<%= @expenses_by_employee.to_json.gsub('"', '&quot;') %>">
+      </div>
+
+      <!-- Conteneur Flex pour disposer le graphique à gauche et le tableau à droite -->
+      <div class="expenses-layout" style="display: flex; flex-wrap: wrap; gap: 20px;">
+        <!-- Graphique à gauche -->
+        <div class="chart-container" style="position: relative; flex: 1; height: 350px;overflow-y: auto;">
+          <h3>Dépenses par employé</h3>
+          <div id="globalExpensesChartData"
+              data-expenses="<%= raw @expenses_by_employee.to_json %>"
+              data-start-date="<%= @start_date %>">
+          </div>
+          <div id="expensesChartData"
+              data-expenses="<%= @expenses_by_employee.to_json.gsub('"', '&quot;') %>">
+          </div>
+          <canvas id="expensesChart"></canvas>
+        </div>
+
+        <!-- Tableau à droite -->
+        <div class="table-container" style="flex: 1;height: 350px;overflow-y: auto;">
+          <h3>Dépenses par catégorie</h3>
+          <table id="expensesCategoryTable" class="table">
+            <thead>
+              <tr>
+                <th>Employé</th>
+                <!-- Les catégories seront ajoutées dynamiquement via JavaScript -->
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Les lignes du tableau seront générées en JS -->
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
+  <% end %>
+<% else %>
+  <div class="details formdiv" style="height: 400px;">
+    <h1>Vous n'êtes pas autorisé à voir cette page.</h1>
   </div>
 <% end %>

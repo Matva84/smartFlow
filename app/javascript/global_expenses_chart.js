@@ -109,25 +109,25 @@ document.addEventListener("DOMContentLoaded", function() {
 
   function generateChart(data) {
     if (expensesChart) {
-      //console.log("🗑️ Suppression de l'ancien graphique...");
       expensesChart.destroy();
     }
 
     // Définition des couleurs pour chaque employé
     const colors = [
-      "rgba(255, 99, 132, 0.6)", "rgba(54, 162, 235, 0.6)", "rgba(255, 206, 86, 0.6)",
-      "rgba(75, 192, 192, 0.6)", "rgba(153, 102, 255, 0.6)", "rgba(255, 159, 64, 0.6)"
+      "rgba(255, 99, 132, 0.6)", "rgba(54, 162, 235, 0.6)",
+      "rgba(255, 206, 86, 0.6)", "rgba(75, 192, 192, 0.6)",
+      "rgba(153, 102, 255, 0.6)", "rgba(255, 159, 64, 0.6)"
     ];
 
     let datasets = [];
     let colorIndex = 0;
 
-    Object.keys(data).forEach((employee, index) => {
+    Object.keys(data).forEach((employee) => {
       datasets.push({
         label: employee, // Nom de l'employé
         data: data[employee], // Données des dépenses par mois
         backgroundColor: colors[colorIndex % colors.length],
-        borderColor: colors[colorIndex % colors.length].replace("0.6", "1"), // Opacité à 1 pour bordure
+        borderColor: colors[colorIndex % colors.length].replace("0.6", "1"),
         borderWidth: 2,
         fill: false,
         tension: 0.4 // Ajoute un effet de courbe
@@ -135,14 +135,19 @@ document.addEventListener("DOMContentLoaded", function() {
       colorIndex++;
     });
 
+    // Limiter la hauteur du canvas avant de créer le graphique
+    ctx.canvas.style.maxHeight = "300px";
+
     expensesChart = new Chart(ctx, {
-      type: "line", // Utilisation d'un graphique en ligne
+      type: "line",
       data: {
-        labels: ["Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Août", "Sept", "Oct", "Nov", "Déc"],
+        labels: ["Jan", "Fév", "Mar", "Avr", "Mai", "Juin",
+                 "Juil", "Août", "Sept", "Oct", "Nov", "Déc"],
         datasets: datasets
       },
       options: {
         responsive: true,
+        maintainAspectRatio: false, // Important pour respecter la hauteur imposée
         plugins: {
           legend: {
             display: true,
@@ -173,9 +178,8 @@ document.addEventListener("DOMContentLoaded", function() {
         }
       }
     });
-
-    //console.log("✅ Graphique mis à jour !");
   }
+
 
   // Générer le graphique initial
   generateChart(expensesByEmployee);
@@ -210,7 +214,8 @@ document.addEventListener("DOMContentLoaded", function() {
     var tbody = table.querySelector("tbody");
 
     // Réinitialiser l'en-tête et le corps du tableau
-    thead.innerHTML = "<th>Employé</th>";
+    // On ajoute la colonne "Total" juste après "Employé"
+    thead.innerHTML = "<th>Employé</th><th>Total</th>";
     tbody.innerHTML = "";
 
     // Ajouter les colonnes pour chaque catégorie
@@ -220,18 +225,31 @@ document.addEventListener("DOMContentLoaded", function() {
       thead.appendChild(th);
     });
 
-    // Pour chaque employé, ajouter une ligne avec la somme par catégorie
+    // Pour chaque employé, ajouter une ligne
     Object.keys(tableData.data).forEach(function(employee) {
       var row = document.createElement("tr");
 
+      // Nom de l'employé
       var tdName = document.createElement("td");
       tdName.innerText = employee;
       row.appendChild(tdName);
 
+      // Calcul du total (somme des catégories)
+      var total = 0;
+      tableData.categories.forEach(function(cat) {
+        total += tableData.data[employee][cat] || 0;
+      });
+
+      // Colonne "Total" (arrondie à 2 décimales)
+      var tdTotal = document.createElement("td");
+      tdTotal.innerText = parseFloat(total).toFixed(1);
+      row.appendChild(tdTotal);
+
+      // Colonnes par catégorie (arrondies à 2 décimales)
       tableData.categories.forEach(function(cat) {
         var td = document.createElement("td");
-        // Affiche 0 si aucune dépense dans la catégorie
-        td.innerText = tableData.data[employee][cat] || 0;
+        var value = tableData.data[employee][cat] || 0;
+        td.innerText = parseFloat(value).toFixed(1);
         row.appendChild(td);
       });
 
@@ -248,17 +266,31 @@ document.addEventListener("DOMContentLoaded", function() {
       return;
     }
 
-    fetch(`/expenses/global_expenses_by_date?start_date=${startDate}&end_date=${endDate}`)
+    var url = `/expenses/global_expenses_by_date?start_date=${startDate}&end_date=${endDate}`;
+    console.log("Bouton 'Mettre à jour' - Fetch URL:", url);
+
+    fetch(url)
       .then(response => {
+        console.log("Bouton 'Année en cours' - Réponse HTTP:", response.status);
         if (!response.ok) {
           throw new Error(`Erreur HTTP : ${response.status} - ${response.statusText}`);
         }
         return response.json();
       })
       .then(data => {
-        updateChart(data);
-        // Mettre à jour le tableau avec les données par catégorie
-        updateTable(data.table);
+        // Vérifier la présence de data.data et data.labels
+        if (!data.data || !data.labels) {
+          console.error("❌ ERREUR : data.data ou data.labels manquant(s) !");
+          return;
+        }
+
+        // On transmet la partie "data" et la partie "labels"
+        updateChart(data.data, data.labels);
+
+        // Pour le tableau
+        if (data.table) {
+          updateTable(data.table);
+        }
       })
       .catch(error => console.error("❌ ERREUR : Impossible de récupérer les nouvelles données :", error));
   });

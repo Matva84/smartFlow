@@ -1,31 +1,37 @@
-<h1>Paramètres</h1>
+<% if user_signed_in? && current_user.employee.admin? %>
+  <h1>Paramètres</h1>
 
-<%= form_with url: update_multiple_settings_path, method: :patch, local: true do %>
-  <table class="table">
-    <thead>
-      <tr>
-        <th>Clé</th>
-        <th>Valeur</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @settings.each do |setting| %>
+  <%= form_with url: update_multiple_settings_path, method: :patch, local: true do %>
+    <table class="table">
+      <thead>
         <tr>
-          <td><%= setting.label.humanize %></td>
-          <td>
-            <% case setting.value_type
-               when "boolean" %>
-                <%= hidden_field_tag "settings[#{setting.id}]", "0" %>
-                <%= check_box_tag "settings[#{setting.id}]", "1", setting.parsed_value %>
-            <% when "float" %>
-                <%= number_field_tag "settings[#{setting.id}]", setting.parsed_value, step: "any" %>
-            <% else %>
-                <%= text_field_tag "settings[#{setting.id}]", setting.value %>
-            <% end %>
-          </td>
+          <th>Clé</th>
+          <th>Valeur</th>
         </tr>
-      <% end %>
-    </tbody>
-  </table>
-  <%= submit_tag "Valider", class: "btn btn-primary" %>
+      </thead>
+      <tbody>
+        <% @settings.each do |setting| %>
+          <tr>
+            <td><%= setting.label.humanize %></td>
+            <td>
+              <% case setting.value_type
+                when "boolean" %>
+                  <%= hidden_field_tag "settings[#{setting.id}]", "0" %>
+                  <%= check_box_tag "settings[#{setting.id}]", "1", setting.parsed_value %>
+              <% when "float" %>
+                  <%= number_field_tag "settings[#{setting.id}]", setting.parsed_value, step: "any" %>
+              <% else %>
+                  <%= text_field_tag "settings[#{setting.id}]", setting.value %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+    <%= submit_tag "Valider", class: "btn btn-primary" %>
+  <% end %>
+<% else %>
+  <div class="details formdiv" style="height: 400px;">
+    <h1>Vous n'êtes pas autorisé à voir cette page.</h1>
+  </div>
 <% end %>

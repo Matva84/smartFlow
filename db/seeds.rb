@@ -19,7 +19,7 @@ admin_user = User.create!(
 employee0 = Employee.create!(
   firstname: "Mat",
   lastname: "VALLEAU",
-  address: "Orsay",
+  address: "123 Rue de l'Université, 91400 Orsay",
   phone: "555-000-233",
   email: admin_user.email,
   group: "GMI",
@@ -31,14 +31,14 @@ employee0 = Employee.create!(
 
 puts "✅ Admin created: #{admin_user.email}"
 
-# Créer les employés
+# Créer les employés avec de vraies adresses en France
 employees_data = [
-  { email: "fabien@example.com", firstname: "Fabien", lastname: "BRIQUEZ", address: "Orsay", group: "GMI", position: "Ingénieur" },
-  { email: "fabrice@example.com", firstname: "Fabrice", lastname: "MARTEAU", address: "Gif sur Yvette", group: "GMI", position: "Ingénieur" },
-  { email: "olivier@example.com", firstname: "Olivier", lastname: "MARCOUILLE", address: "Fresnes", group: "GMI", position: "Ingénieur" },
-  { email: "romain@example.com", firstname: "Romain", lastname: "BAILLIER", address: "Les Ulis", group: "GMI", position: "Technicien" },
-  { email: "philippe@example.com", firstname: "Philippe", lastname: "BERTEAUD", address: "Arpajon", group: "GAM", position: "Technicien" },
-  { email: "anthony@example.com", firstname: "Anthony", lastname: "BERLIOUX", address: "Bures sur Yvette", group: "GAM", position: "Ingénieur" }
+  { email: "fabien@example.com", firstname: "Fabien", lastname: "BRIQUEZ", address: "10 Rue de la République, 91400 Orsay", group: "GMI", position: "Ingénieur" },
+  { email: "fabrice@example.com", firstname: "Fabrice", lastname: "MARTEAU", address: "15 Rue de l'Église, 91460 Gif-sur-Yvette", group: "GMI", position: "Ingénieur" },
+  { email: "olivier@example.com", firstname: "Olivier", lastname: "MARCOUILLE", address: "25 Rue de la Liberté, 94260 Fresnes", group: "GMI", position: "Ingénieur" },
+  { email: "romain@example.com", firstname: "Romain", lastname: "BAILLIER", address: "5 Avenue du Général Leclerc, 91940 Les Ulis", group: "GMI", position: "Technicien" },
+  { email: "philippe@example.com", firstname: "Philippe", lastname: "BERTEAUD", address: "7 Rue de l'Église, 91530 Arpajon", group: "GAM", position: "Technicien" },
+  { email: "anthony@example.com", firstname: "Anthony", lastname: "BERLIOUX", address: "3 Rue des Lilas, 91700 Bures-sur-Yvette", group: "GAM", position: "Ingénieur" }
 ]
 
 employees = employees_data.map do |emp_data|
@@ -66,14 +66,14 @@ employees = employees_data.map do |emp_data|
   employee
 end
 
-# Créer des clients
+# Créer des clients avec de vraies adresses en France
 clients_data = [
-  { email: "martine@example.com", firstname: "Martine", lastname: "DOLADILLE", address: "Paris", rib: "rib1" },
-  { email: "michelle@example.com", firstname: "Michèle", lastname: "COLLOT", address: "Marseille", rib: "rib2" },
-  { email: "vincent@example.com", firstname: "Vincent", lastname: "LAUNAY", address: "Rennes", rib: "rib13" },
-  { email: "amelie@example.com", firstname: "Amélie", lastname: "BURBAN", address: "Paris", rib: "rib14" },
-  { email: "catherine@example.com", firstname: "Catherine", lastname: "DEGRES", address: "Vannes", rib: "rib14" },
-  { email: "violaine@example.com", firstname: "Violaine", lastname: "MAGNEN", address: "Séné", rib: "rib14" }
+  { email: "martine@example.com", firstname: "Martine", lastname: "DOLADILLE", address: "15 Rue de Rivoli, 75001 Paris", rib: "rib1" },
+  { email: "michelle@example.com", firstname: "Michèle", lastname: "COLLOT", address: "27 Boulevard Baille, 13001 Marseille", rib: "rib2" },
+  { email: "vincent@example.com", firstname: "Vincent", lastname: "LAUNAY", address: "12 Rue de la Monnaie, 35000 Rennes", rib: "rib13" },
+  { email: "amelie@example.com", firstname: "Amélie", lastname: "BURBAN", address: "22 Rue de la Paix, 75002 Paris", rib: "rib14" },
+  { email: "catherine@example.com", firstname: "Catherine", lastname: "DEGRES", address: "5 Place de la Liberté, 56000 Vannes", rib: "rib14" },
+  { email: "violaine@example.com", firstname: "Violaine", lastname: "MAGNEN", address: "18 Avenue de la République, 56500 Séné", rib: "rib14" }
 ]
 
 clients = clients_data.map do |cli_data|
@@ -141,18 +141,17 @@ end
 
 puts "✅ Events generated for the next 2 months!"
 
-
-# Créer des projets avec des employés et des clients assignés
-projects = [
-  { name: "Construction d'un immeuble à Paris", address: "Paris", budget: 1_500_000 },
-  { name: "Rénovation d'une maison à Marseille", address: "Marseille", budget: 200_000 },
-  { name: "Aménagement d'un parc à Rennes", address: "Rennes", budget: 500_000 },
-  { name: "Construction d'un complexe sportif à Orsay", address: "Orsay", budget: 2_000_000 },
-  { name: "Modernisation des bureaux à Bures-sur-Yvette", address: "Bures-sur-Yvette", budget: 100_000 },
-  { name: "Installation de panneaux solaires à Vannes", address: "Vannes", budget: 300_000 }
+# Créer des projets avec des employés et des clients assignés, avec de vraies adresses
+projects_data = [
+  { name: "Construction d'un immeuble à Paris", address: "15 Rue de la République, 75001 Paris", budget: 1_500_000 },
+  { name: "Rénovation d'une maison à Marseille", address: "27 Boulevard Baille, 13001 Marseille", budget: 200_000 },
+  { name: "Aménagement d'un parc à Rennes", address: "12 Rue de la Monnaie, 35000 Rennes", budget: 500_000 },
+  { name: "Construction d'un complexe sportif à Orsay", address: "5 Avenue du Général Leclerc, 91400 Orsay", budget: 2_000_000 },
+  { name: "Modernisation des bureaux à Bures-sur-Yvette", address: "3 Rue des Lilas, 91700 Bures-sur-Yvette", budget: 100_000 },
+  { name: "Installation de panneaux solaires à Vannes", address: "5 Place de la Liberté, 56000 Vannes", budget: 300_000 }
 ]
 
-projects.each do |proj_data|
+projects_data.each do |proj_data|
   start_date = Date.today - rand(30..180) # Date de début entre il y a 1 à 6 mois
   end_date = start_date + rand(60..365) # Durée du projet entre 2 mois et 1 an
 
@@ -194,11 +193,10 @@ end
 
 puts "✅ Notes de frais générées pour chaque employé avec le statut 'en attente'."
 
-
 # Paramètres globaux
-Setting.create!(key: "labor_tva", value: 20.0, label:"TVA sur la main d'oeuvre", value_type: "float") # TVA sur la main-d'œuvre en %
-Setting.create!(key: "material_tva", value: 5.5, label:"TVA sur le matériel", value_type: "float") # TVA sur le matériel en %
-Setting.create!(key: "quote_prefix", value: "Relax_", label:"Préfix pour les devis", value_type: "string") # Préfixe pour les devis
-Setting.create!(key: "expenses_enabled", value: true, label: "Activer les notes de frais", value_type: "boolean") # Préfixe pour les devis
+Setting.create!(key: "labor_tva", value: 20.0, label:"TVA sur la main d'oeuvre", value_type: "float")
+Setting.create!(key: "material_tva", value: 5.5, label:"TVA sur le matériel", value_type: "float")
+Setting.create!(key: "quote_prefix", value: "Relax_", label:"Préfix pour les devis", value_type: "string")
+Setting.create!(key: "expenses_enabled", value: true, label: "Activer les notes de frais", value_type: "boolean")
 
 puts "✅ Seeding completed successfully!"

@@ -14,11 +14,12 @@ document.addEventListener("DOMContentLoaded", function() {
       employeeMenuItem.innerHTML = employeeMenuItem.textContent.trim(); // Supprime le point rouge s'il existe
     }
 
-    // Cacher la section des demandes en attente
-    const pendingRequestsSection = document.querySelector(".halfwidth.formdiv.asks");
-    if (pendingRequestsSection) {
-      pendingRequestsSection.style.display = "none";
-    }
+    // Cacher toutes les sections des demandes en attente
+const pendingRequestsSections = document.querySelectorAll(".halfwidth.formdiv.toBeHiddenForEmployees");
+pendingRequestsSections.forEach(section => {
+  section.style.display = "none";
+});
+
 
     return; // Stoppe l'exécution du reste du script
   }

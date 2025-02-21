@@ -23,6 +23,9 @@
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
     <%= javascript_importmap_tags %>
     <meta name="user-logged-in" content="<%= user_signed_in? %>">
       <% if user_signed_in? %>
