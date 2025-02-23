@@ -243,6 +243,28 @@
         <div class="message-container <%= msg.user.email == current_user.email ? 'self' : 'other' %>">
           <div class="message-bubble">
             <%= msg.content %>
+            <% if msg.documents.attached? %>
+              <div class="message-documents">
+
+                <% msg.documents.each do |doc| %>
+                  <div class="document-thumbnail" style="display: inline-block; margin: 5px;">
+                    <% if doc.blob.content_type.start_with?('image') %>
+                      <!-- Lien vers l'URL du document original -->
+                      <%= link_to url_for(doc), target: "_blank" do %>
+                        <!-- Affichage de la vignette redimensionnée -->
+                        <%= image_tag doc.variant(resize_to_limit: [100, 100]).processed, alt: "Aperçu de l'image" %>
+                      <% end %>
+                    <% else %>
+                      <!-- Lien vers le document pour les autres types -->
+                      <%= link_to url_for(doc), target: "_blank" do %>
+                        <%= image_tag "generic_document_icon.png", alt: "Document", size: "100x100" %>
+                      <% end %>
+                    <% end %>
+                  </div>
+                <% end %>
+              </div>
+
+            <% end %>
           </div>
           <div class="message-timestamp">
             <%= msg.full_name %> - <%= msg.created_at.strftime("%d/%m à %H:%M") %>
@@ -251,9 +273,21 @@
       <% end %>
     </div>
 
-    <form id="new_message" action="#">
-      <div id="message_input_container">
-        <input type="text" id="message_content" placeholder="Taper votre message" autocomplete="off" required>
+    <form id="new_message msg_form" action="#">
+      <div class="msg_form">
+        <div id="document_input_container">
+          <label for="message_documents" class="btn-plus">+</label>
+          <input
+            type="file"
+            id="message_documents"
+            accept="image/*,application/pdf"
+            multiple
+            style="display: none;"
+          >
+        </div>
+        <div id="message_input_container">
+          <input type="text" id="message_content" placeholder="Tapez votre message" autocomplete="on">
+        </div>
       </div>
     </form>
 

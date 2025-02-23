@@ -85,5 +85,6 @@ Rails.application.routes.draw do
       get :global_expenses_by_date
     end
   end
+  resources :messages, only: [:create]
 
 end

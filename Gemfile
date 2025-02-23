@@ -56,6 +56,8 @@ gem 'chartkick'
 gem 'groupdate'
 gem 'redis'
 gem 'geocoder'
+gem 'image_processing', '~> 1.2'
+
 
 group :development, :test do
   gem "dotenv-rails"

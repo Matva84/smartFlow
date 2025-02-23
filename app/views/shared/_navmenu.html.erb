@@ -3,63 +3,75 @@
 </div>
 
 <div class="nav-lateral-menu">
-  <ul style="list-style-type: none;padding-left: 20px;">
-    <li>
-        <%= link_to root_path, class:"btn btn-lat-menu" do %>
-          <i class="fa-solid fa-chart-line" style="padding-right: 10px;"></i> <strong>Tableau de bord</strong>
-        <% end %>
-    </li>
-    <li>
-        <%= link_to employees_path, class:"btn btn-lat-menu" do %>
-          <i class="fa-solid fa-people-group" style="padding-right: 10px;"></i> <strong>Employés</strong>
-        <% end %>
-    </li>
-    <li>
-        <%= link_to clients_path, class:"btn btn-lat-menu" do %>
-          <i class="fa-solid fa-shop" style="padding-right: 10px;"></i> <strong>Clients</strong>
-        <% end %>
-    </li>
-    <li>
-        <%= link_to projects_path, class:"btn btn-lat-menu" do %>
-          <i class="fa-solid fa-diagram-project" style="padding-right: 10px;"></i> <strong>Projets</strong>
-        <% end %>
-    </li>
-    <li>
-        <%= link_to root_path, class:"btn btn-lat-menu" do %>
-          <i class="fa-solid fa-truck-field" style="padding-right: 10px;"></i> <strong>Fournisseurs</strong>
-        <% end %>
-    </li>
-       <li>
-        <%= link_to root_path, class:"btn btn-lat-menu" do %>
-          <i class="fa-solid fa-cubes-stacked" style="padding-right: 10px;"></i> <strong>Stocks</strong>
-        <% end %>
-    </li>
-    <li>
-      <%= link_to quotes_path, class: "btn btn-lat-menu" do %>
-        <i class="fa-solid fa-sheet-plastic" style="padding-right: 10px;"></i> <strong>Devis</strong>
-      <% end %>
-    </li>
-    <li>
-        <%= link_to root_path, class:"btn btn-lat-menu" do %>
-          <i class="fa-solid fa-calendar-week" style="padding-right: 10px;"></i> <strong>Planning</strong>
-        <% end %>
-    </li>
-    <li>
-        <%= link_to root_path, class:"btn btn-lat-menu" do %>
-          <i class="fa-solid fa-money-bill-trend-up" style="padding-right: 10px;"></i> <strong>Finances</strong>
-        <% end %>
-    </li>
-    <li>
-        <%= link_to root_path, class:"btn btn-lat-menu" do %>
-          <i class="fa-solid fa-comment" style="padding-right: 10px;"></i> <strong>Messagerie</strong>
-        <% end %>
-    </li>
-    <li>
-        <%= link_to settings_path, class:"btn btn-lat-menu" do %>
-          <i class="fa-solid fa-gears"></i> <strong>Paramètres</strong>
-        <% end %>
-    </li>
-  </ul>
+  <ul style="list-style-type: none; padding-left: 20px;">
+  <li>
+    <%= link_to root_path, class: "btn btn-lat-menu #{'active' if current_page?(root_path)}" do %>
+      <i class="fa-solid fa-chart-line" style="padding-right: 10px;"></i>
+      <strong>Tableau de bord</strong>
+    <% end %>
+  </li>
+  <li>
+    <%= link_to employees_path, class: "btn btn-lat-menu #{'active' if current_page?(employees_path)}" do %>
+      <i class="fa-solid fa-people-group" style="padding-right: 10px;"></i>
+      <strong>Employés</strong>
+    <% end %>
+  </li>
+  <li>
+    <%= link_to clients_path, class: "btn btn-lat-menu #{'active' if current_page?(clients_path)}" do %>
+      <i class="fa-solid fa-shop" style="padding-right: 10px;"></i>
+      <strong>Clients</strong>
+    <% end %>
+  </li>
+  <li>
+    <%= link_to projects_path, class: "btn btn-lat-menu #{'active' if current_page?(projects_path)}" do %>
+      <i class="fa-solid fa-diagram-project" style="padding-right: 10px;"></i>
+      <strong>Projets</strong>
+    <% end %>
+  </li>
+  <li>
+    <%= link_to root_path, class: "btn btn-lat-menu #{'active' if current_page?(root_path)}" do %>
+      <i class="fa-solid fa-truck-field" style="padding-right: 10px;"></i>
+      <strong>Fournisseurs</strong>
+    <% end %>
+  </li>
+  <li>
+    <%= link_to root_path, class: "btn btn-lat-menu #{'active' if current_page?(root_path)}" do %>
+      <i class="fa-solid fa-cubes-stacked" style="padding-right: 10px;"></i>
+      <strong>Stocks</strong>
+    <% end %>
+  </li>
+  <li>
+    <%= link_to quotes_path, class: "btn btn-lat-menu #{'active' if current_page?(quotes_path)}" do %>
+      <i class="fa-solid fa-sheet-plastic" style="padding-right: 10px;"></i>
+      <strong>Devis</strong>
+    <% end %>
+  </li>
+  <li>
+    <%= link_to root_path, class: "btn btn-lat-menu #{'active' if current_page?(root_path)}" do %>
+      <i class="fa-solid fa-calendar-week" style="padding-right: 10px;"></i>
+      <strong>Planning</strong>
+    <% end %>
+  </li>
+  <li>
+    <%= link_to root_path, class: "btn btn-lat-menu #{'active' if current_page?(root_path)}" do %>
+      <i class="fa-solid fa-money-bill-trend-up" style="padding-right: 10px;"></i>
+      <strong>Finances</strong>
+    <% end %>
+  </li>
+  <li>
+    <%= link_to root_path, class: "btn btn-lat-menu #{'active' if current_page?(root_path)}" do %>
+      <i class="fa-solid fa-comment" style="padding-right: 10px;"></i>
+      <strong>Messagerie</strong>
+    <% end %>
+  </li>
+  <li>
+    <%= link_to settings_path, class: "btn btn-lat-menu #{'active' if current_page?(settings_path)}" do %>
+      <i class="fa-solid fa-gears"></i>
+      <strong>Paramètres</strong>
+    <% end %>
+  </li>
+</ul>
+
 
   <div class="nav-lateral-menu-footer">
     <% if user_signed_in? %>

@@ -31,6 +31,7 @@ module SmartFlow
     # config.eager_load_paths << Rails.root.join("extras")
     config.i18n.default_locale = :fr
     config.i18n.available_locales = [:en, :fr]
+    config.active_storage.variant_processor = :mini_magick
 
   end
 end

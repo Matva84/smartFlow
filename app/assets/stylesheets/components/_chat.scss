@@ -29,9 +29,12 @@
 }
 /* Style pour le champ de saisie façon bulle iPhone */
 #message_input_container {
-  margin-top: 10px;
+  //margin-top: 10px;
+  width: 100%;
 }
 #message_content {
+  /* Retirez width: 100%; si vous l'aviez */
+  flex: 1;
   width: 100%;
   padding: 12px 16px;
   border: 1px solid #ccc;
@@ -40,6 +43,7 @@
   box-sizing: border-box;
   outline: none;
 }
+
 #message_content:focus {
   border-color: #007aff;
 }
@@ -62,4 +66,46 @@
 /* Pour la page projet : messages envoyés par l'utilisateur connecté en violet */
 .chat-project .message-container.self .message-bubble {
   background-color: #6f42c1;  /* violet */
+}
+.document-thumbnail img {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 2px;
+  background: #fff;
+}
+.message-documents {
+  margin-top: 5px;
+}
+.msg_form {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 10px;
+  background-color: #f8f9fa;
+  border: 1px solid #ccc;
+  border-radius: 0 0 16px 16px;
+  gap: 12px;
+}
+.btn-plus,
+.btn-mic {
+  background: none;
+  border: 1px solid grey;
+  color: grey;                /* Couleur texte blanche */
+  font-size: 24px;            /* Taille du + */
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin: 0 5px;
+  background-color: white;
+}
+
+/* Lorsque vous survolez le bouton, vous pouvez ajouter un léger hover */
+.btn-plus:hover,
+.btn-mic:hover {
+  background-color: #f8f9fa;
 }

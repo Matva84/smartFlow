@@ -73,13 +73,25 @@ ul {
   padding: 10px 0;
   font-size: 14px;
   font-weight: 100;
+  border: none;
 }
 .btn-lat-menu:hover {
-  scale: 1.05;
+  //scale: 1.07;
+  color: #718DA9;
+  border: none;
 }
-.btn:focus {
+.btn-lat-menu.active {
+  //transform: scale(1.07);
+  color: #718DA9;
+  transition: transform 0.3s ease;
   box-shadow: none;
   outline: none;
+  border: none;
+}
+a:focus {
+  box-shadow: none;
+  outline: none;
+  border: none;
 }
 .nav-lateral-menu-footer {
   position: absolute;
