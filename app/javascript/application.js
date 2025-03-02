@@ -10,6 +10,7 @@ import "./global_expenses_chart";
 //import "./channels/employee_chat";
 import "./channels/consumer";
 import "./channels/chat";
+import "./channels/readMessage";
 import "./expenseCategory";
 import "./menu";
 //import "./interactiveCard";

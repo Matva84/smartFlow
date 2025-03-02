@@ -55,7 +55,9 @@ class CommunicationChannel < ApplicationCable::Channel
       messageable: messageable,
       full_name: full_name
     )
-
+    if messageable.is_a?(Employee)
+      message.update!(recipient_id: messageable.user_id)
+    end
     Rails.logger.info "Message créé via speak => #{message.inspect}"
     # Diffuser via la méthode de classe
     self.class.broadcast_message(message)

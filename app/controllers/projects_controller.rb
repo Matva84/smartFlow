@@ -7,6 +7,14 @@ class ProjectsController < ApplicationController
   def index
     @projects = Project.all
     @projects = Project.order(:progression)
+    case params[:filter]
+    when 'completed'
+      @projects = @projects.where(progression: 100)
+    when 'in_progress'
+      @projects = @projects.where('progression > 0 AND progression < 100')
+    when 'not_started'
+      @projects = @projects.where(progression: 0)
+    end
   end
 
   def show

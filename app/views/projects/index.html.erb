@@ -1,7 +1,16 @@
 <% if user_signed_in? && current_user.employee.admin? %>
-
   <div class="formdiv fullwidth">
-
+      <div>
+        <h4>Filtrer par état de projet :</h4>
+        <%= link_to "Tous les projets", projects_path(filter: 'all'),
+                    class: "btn-filter #{'active' if params[:filter].blank? || params[:filter] == 'all'}" %>
+        <%= link_to "Projet achevé", projects_path(filter: 'completed'),
+                    class: "btn-filter #{'active' if params[:filter] == 'completed'}" %>
+        <%= link_to "Projet en cours", projects_path(filter: 'in_progress'),
+                    class: "btn-filter #{'active' if params[:filter] == 'in_progress'}" %>
+        <%= link_to "Projet non débuté", projects_path(filter: 'not_started'),
+                    class: "btn-filter #{'active' if params[:filter] == 'not_started'}" %>
+      </div>
     <table>
       <tbody>
         <% @projects.each do |project| %>

@@ -116,8 +116,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const formData = new FormData();
     formData.append("message[content]", message);
-    formData.append("messageable_type", "Employee"); // Adaptation selon votre code
-    formData.append("messageable_id", "6");          // Adaptation selon votre code
+    formData.append("messageable_type", messageableType);
+    formData.append("messageable_id", messageableId);
 
     for (let i = 0; i < fileInput.files.length; i++) {
       formData.append("message[documents][]", fileInput.files[i]);

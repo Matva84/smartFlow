@@ -12,6 +12,10 @@ class MessagesController < ApplicationController
       full_name: determine_full_name(current_user)
     )
 
+    if messageable.is_a?(Employee)
+      message.recipient_id = messageable.user_id
+    end
+
     # Attacher les documents si présents
     if params[:message][:documents].present?
       params[:message][:documents].each do |doc|
@@ -27,6 +31,19 @@ class MessagesController < ApplicationController
       render json: { status: 'ok' }
     else
       render json: { status: 'error', errors: message.errors.full_messages }, status: :unprocessable_entity
+    end
+  end
+
+  def mark_as_read
+    message = Message.find(params[:id])
+
+    # Vérifier que current_user est le destinataire
+    # (Dans votre schéma, vous avez un champ `recipient_id` ou `employee_id` pour savoir qui est le destinataire)
+    if message.recipient_id == current_user.id && message.read_at.nil?
+      message.mark_as_read!
+      render json: { status: 'ok', read_at: message.read_at }
+    else
+      render json: { status: 'error', message: "Impossible de marquer comme lu" }, status: :unprocessable_entity
     end
   end
 
