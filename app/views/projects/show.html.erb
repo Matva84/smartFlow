@@ -1,5 +1,11 @@
 <% if user_signed_in? && current_user.employee.admin? %>
   <div class="autoflexinline">
+    <%= link_to "Modifier", edit_project_path(@project), class: "link-button" %>
+    <%= link_to "Retour à la liste", projects_path, class: "link-button" %>
+    <%= button_to "Supprimer", project_path(@project), method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce projet ?" }, class: "link-button" %>
+  </div>
+
+  <div class="autoflexinline">
     <div class="details formdiv">
       <h1>Détails du projet</h1>
       <p><strong>Nom :</strong> <%= @project.name %></p>
@@ -42,7 +48,7 @@
             </li>
           <% end %>
         </ul>
-        <%= form.submit "Mettre à jour les employés", class: "btn btn-primary" %>
+        <%= form.submit "Mettre à jour les employés", class: "link-button" %>
       <% end %>
     </div>
 
@@ -75,11 +81,6 @@
         <p>Aucun devis associé à ce projet.</p>
       <% end %>
 
-      <hr>
-
-      <%= link_to "Modifier", edit_project_path(@project), class: "btn btn-secondary" %>
-      <%= link_to "Retour à la liste", projects_path, class: "btn btn-secondary" %>
-      <%= button_to "Supprimer", project_path(@project), method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer ce projet ?" }, class: "btn btn-danger" %>
     </div>
   </div>
 

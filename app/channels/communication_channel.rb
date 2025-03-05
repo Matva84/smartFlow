@@ -10,6 +10,10 @@ class CommunicationChannel < ApplicationCable::Channel
   # Méthode de classe pour diffuser un message existant
   def self.broadcast_message(message)
     payload = {
+      message_id: message.id,            # AJOUT pour identifier le message
+      messageable_id: message.messageable_id,  # AJOUT
+      recipient_id: message.recipient_id,# AJOUT pour savoir à qui il est destiné
+      read_at: message.read_at,          # AJOUT pour l'état de lecture
       message: message.content,
       user: message.user.email,
       full_name: message.full_name,
@@ -39,29 +43,47 @@ class CommunicationChannel < ApplicationCable::Channel
 
     Rails.logger.info "CommunicationChannel.broadcast_message => Payload: #{payload.inspect}"
 
-    # Diffuser sur le canal
     channel_name = "#{message.messageable_type.downcase}_#{message.messageable_id}_channel"
     ActionCable.server.broadcast(channel_name, payload)
   end
+
 
   # Méthode speak pour gérer le cas "perform('speak', { message: ... })" côté client
   def speak(data)
     messageable = params[:messageable_type].constantize.find(params[:messageable_id])
     full_name = determine_full_name(connection.current_user)
-    # Créer le message (uniquement texte, par exemple)
+
     message = Message.create!(
       content: data['message'],
       user: connection.current_user,
       messageable: messageable,
       full_name: full_name
     )
-    if messageable.is_a?(Employee)
+
+    if connection.current_user.role == 'admin' && messageable.is_a?(Employee)
       message.update!(recipient_id: messageable.user_id)
+    elsif connection.current_user.role == 'employee'
+      admin_user = User.find_by(role: 'admin')
+      message.update!(recipient_id: admin_user.id) if admin_user
     end
-    Rails.logger.info "Message créé via speak => #{message.inspect}"
-    # Diffuser via la méthode de classe
+
+    Rails.logger.info "Message créé via speak => user_id=#{message.user_id}, recipient_id=#{message.recipient_id}"
     self.class.broadcast_message(message)
   end
+
+
+  def self.broadcast_read_status(message)
+    payload = {
+      message_id: message.id,
+      messageable_id: message.messageable_id,  # AJOUT
+      read_at: message.read_at,
+      recipient_id: message.recipient_id
+    }
+    Rails.logger.debug "CommunicationChannel.broadcast_read_status => #{payload.inspect}"
+    ActionCable.server.broadcast("#{message.messageable_type.downcase}_#{message.messageable_id}_channel", payload)
+  end
+
+
 
   private
 

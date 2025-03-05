@@ -1,167 +1,194 @@
 <% if user_signed_in? && current_user.employee.admin? %>
+  <div class="autoflexinline">
+    <%= link_to "Retour à la liste des devis", quotes_path, class: "link-button" %>
+    <%= link_to "Modifier", edit_quote_path(@quote), class: "link-button" %>
+    <%= link_to "Retour à la liste", quotes_path, class: "link-button" %>
+    <%#= link_to "Supprimer", quote_path(@quote), method: :delete, data: { confirm: "Êtes-vous sûr ?" }, class: "btn btn-danger" %>
+    <%= button_to "Supprimer", quote_path(@quote), method: :delete, data: { confirm: "Êtes-vous sûr ?" } , class: "link-button" %>
+    <%= button_to "Dupliquer le devis", duplicate_quote_path(@quote), method: :post, class: "link-button" %>
+  </div>
 
-  <h1>Devis <%= @quote.number %></h1>
-
-  <p>
-    <strong>Statut :</strong> <%= @quote.status %>
-  </p>
-
-  <p>
-    <strong>Total :</strong> <%= number_to_currency(@quote.total, unit: "€") %>
-  </p>
-
-  <p>
-    <strong>Projet associé :</strong>
-    <%= link_to @quote.project.name, project_path(@quote.project) if @quote.project %>
-  </p>
-
-  <hr>
-
-  <h2>Avenants associés</h2>
-
-  <% if @quote.amendments.any? %>
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <th>Numéro</th>
-          <th>Statut</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @quote.amendments.each do |amendment| %>
-          <tr>
-            <td><%= amendment.number %></td>
-            <td><%= amendment.status %></td>
-            <td>
-              <%= link_to "Voir", quote_path(amendment), class: "btn btn-info" %>
-              <%= link_to "Modifier", edit_quote_path(amendment), class: "btn btn-warning" %>
-              <%#= link_to "Supprimer", quote_path(amendment), method: :delete, data: { confirm: "Êtes-vous sûr ?" }, class: "btn btn-danger" %>
-              <%= button_to "Supprimer", quote_path(amendment), method: :delete, data: { confirm: "Êtes-vous sûr ?" } , class: "btn btn-danger" %>
-            </td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
-  <% else %>
-    <p>Aucun avenant associé à ce devis.</p>
-  <% end %>
-  <hr>
-
-  <hr>
-
-  <h2>Items associés</h2>
-
-  <% if @quote.items.any? %>
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <th>Catégorie</th>
-          <th>Description</th>
-          <th>Durée</th>
-          <th>Nb personnes</th>
-          <th>Matériel</th>
-          <th>Coût total HT</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @quote.items.each do |item| %>
-          <tr>
-            <!--<td><%= item.category %></td>
-            <td><%= item.description %></td>
-            <td><%= item.duration %> heures</td>
-            <td><%= item.nb_people %></td>
-            <td><%= item.material %></td>
-            <td><%= number_to_currency(item.total_price_ht, unit: "€") %></td>-->
-            <td>
-              <!-- Formulaire pour modifier cet item -->
-              <%= form_with(model: [@quote, item], url: quote_item_path(@quote, item), method: :patch, local: true, class: "d-flex align-items-center gap-2") do |form| %>
-                <%= form.text_field :category, class: "form-control form-control-sm", placeholder: "Catégorie" %>
-                <%= form.text_field :description, class: "form-control form-control-sm", placeholder: "Description" %>
-                <%= form.number_field :duration, class: "form-control form-control-sm", placeholder: "Durée (heures)" %>
-                <%= form.number_field :nb_people, class: "form-control form-control-sm", placeholder: "Nb personnes" %>
-                <%= form.number_field :hourly_cost, class: "form-control form-control-sm", placeholder: "Taux horaire" %>
-                <%= form.number_field :human_margin, class: "form-control form-control-sm", placeholder: "Marge main d'oeuvre" %>
-                <%= form.text_field :material, class: "form-control form-control-sm", placeholder: "Matériel" %>
-                <%= form.text_field :unit_price_ht, class: "form-control form-control-sm", placeholder: "Prix unitaire" %>
-                <%= form.text_field :material_margin, class: "form-control form-control-sm", placeholder: "Marge" %>
-                <%= form.text_field :quantity, class: "form-control form-control-sm", placeholder: "Quantité" %>
-                <%= form.text_field :quantity, class: "form-control form-control-sm", placeholder: "TVA" %>
-                <%= form.number_field :vat_value, class: "form-control form-control-sm", placeholder: "Coût total HT" %>
-                <%= form.submit "Modifier", class: "btn btn-primary btn-sm" %>
-                <%= button_to "Supprimer", quote_item_path(@quote, item), method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cet item ?" }, class: "btn btn-danger btn-sm mt-2" %>
-
-  <!--   t.decimal "human_total_cost"
-      t.decimal "total_price_ht"
-      t.decimal "material_cost"
-      t.decimal "total_cumulative"
-      t.decimal "total_margin" -->
-
-              <% end %>
-              <!-- Bouton pour supprimer cet item -->
-            </td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
-  <% else %>
-    <p>Aucun item associé à ce devis.</p>
-  <% end %>
-
-
-  <hr>
-
-  <h2>Ajouter un nouvel item</h2>
-
-  <%= form_with(model: [@quote, @quote.items.build], local: true) do |form| %>
-    <div class="mb-3">
-      <%= form.label :category, "Catégorie" %>
-      <%= form.text_field :category, class: "form-control" %>
+  <div class="autoflexinline">
+    <div class="details formdiv">
+      <h1>Devis <%= @quote.number %></h1>
+      <p><strong>Statut :</strong> <%= @quote.status %></p>
+      <p><strong>Total :</strong> <%= number_to_currency(@quote.total, unit: "€") %></p>
+      <p><strong>Projet associé :</strong>
+        <%= link_to @quote.project.name, project_path(@quote.project) if @quote.project %>
+      </p>
     </div>
 
-    <div class="mb-3">
-      <%= form.label :description, "Description" %>
-      <%= form.text_area :description, class: "form-control" %>
+    <div class="details formdiv">
+      <h2>Avenants associés</h2>
+      <% if @quote.amendments.any? %>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Numéro</th>
+              <th>Statut</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @quote.amendments.each do |amendment| %>
+              <tr>
+                <td><%= amendment.number %></td>
+                <td><%= amendment.status %></td>
+                <td>
+                  <%= link_to "Voir", quote_path(amendment), class: "btn btn-info" %>
+                  <%= link_to "Modifier", edit_quote_path(amendment), class: "btn btn-warning" %>
+                  <%#= link_to "Supprimer", quote_path(amendment), method: :delete, data: { confirm: "Êtes-vous sûr ?" }, class: "btn btn-danger" %>
+                  <%= button_to "Supprimer", quote_path(amendment), method: :delete, data: { confirm: "Êtes-vous sûr ?" } , class: "btn btn-danger" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <% else %>
+        <p>Aucun avenant associé à ce devis.</p>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="autoflexinline">
+    <div class="details formdiv">
+      <h2>Items associés</h2>
+      <% if @quote.items.any? %>
+        <table class="table table-striped">
+          <!--<thead>
+            <tr>
+              <th>Catégorie</th>
+              <th>Description</th>
+              <th>Durée</th>
+              <th>Nb personnes</th>
+              <th>Matériel</th>
+              <th>Coût total HT</th>
+              <th>Actions</th>
+            </tr>
+          </thead>-->
+          <tbody>
+            <% @quote.items.each do |item| %>
+              <tr>
+                <!--<td><%= item.category %></td>
+                <td><%= item.description %></td>
+                <td><%= item.duration %> heures</td>
+                <td><%= item.nb_people %></td>
+                <td><%= item.material %></td>
+                <td><%= number_to_currency(item.total_price_ht, unit: "€") %></td>-->
+                <td>
+                  <!-- Formulaire pour modifier cet item -->
+                  <%= form_with(model: [@quote, item], url: quote_item_path(@quote, item), method: :patch, local: true, class: "d-flex align-items-center gap-2") do |form| %>
+                    <%= form.text_field :category, class: "form-control form-control-sm", placeholder: "Catégorie" %>
+                    <%= form.text_field :description, class: "form-control form-control-sm", placeholder: "Description" %>
+                    <%= form.number_field :duration, class: "form-control form-control-sm", placeholder: "Durée (heures)" %>
+                    <%= form.number_field :nb_people, class: "form-control form-control-sm", placeholder: "Nb personnes" %>
+                    <%= form.number_field :hourly_cost, class: "form-control form-control-sm", placeholder: "Taux horaire" %>
+                    <%= form.number_field :human_margin, class: "form-control form-control-sm", placeholder: "Marge main d'oeuvre" %>
+                    <%= form.text_field :material, class: "form-control form-control-sm", placeholder: "Matériel" %>
+                    <%= form.text_field :unit_price_ht, class: "form-control form-control-sm", placeholder: "Prix unitaire" %>
+                    <%= form.text_field :material_margin, class: "form-control form-control-sm", placeholder: "Marge" %>
+                    <%= form.text_field :quantity, class: "form-control form-control-sm", placeholder: "Quantité" %>
+                    <%= form.number_field :total_price_ht, class: "form-control form-control-sm", placeholder: "Coût total HT" %>
+                    <%= form.submit "Modifier", class: "btn btn-primary btn-sm" %>
+                    <%= button_to "Supprimer", quote_item_path(@quote, item), method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cet item ?" }, class: "btn btn-danger btn-sm mt-2" %>
+
+      <!--   t.decimal "human_total_cost"
+          t.decimal "total_price_ht"
+          t.decimal "material_cost"
+          t.decimal "total_cumulative"
+          t.decimal "total_margin" -->
+
+                  <% end %>
+                  <!-- Bouton pour supprimer cet item -->
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <% else %>
+        <p>Aucun item associé à ce devis.</p>
+      <% end %>
     </div>
 
-    <div class="mb-3">
-      <%= form.label :duration, "Durée (en heures)" %>
-      <%= form.number_field :duration, class: "form-control" %>
+      <!-- app/views/quotes/show.html.erb -->
+    <div class="details formdiv">
+      <h2>Ajouter un nouvel item</h2>
+
+      <%= form_with(model: [@quote, @quote.items.build], local: true, html: { id: "new-item-form" }) do |form| %>
+
+        <!-- Exemple de champ "Catégorie" -->
+        <div class="mb-3">
+          <%= form.label :category, "Catégorie" %>
+          <!-- On utilise un text_field qu’on complètera avec datalist ou JS (Stimulus, etc.) -->
+          <%= form.text_field :category,
+                class: "form-control",
+                data: { action: "change->item-form#onCategoryChange", item_form_target: "categoryField" } %>
+          <!-- Eventuellement : <datalist> ... </datalist> pour autocompléter en HTML5 -->
+        </div>
+
+        <!-- Champ "Description" -->
+        <div class="mb-3">
+          <%= form.label :description, "Description" %>
+          <%= form.text_field :description,
+                class: "form-control",
+                data: { action: "change->item-form#onDescriptionChange", item_form_target: "descriptionField" } %>
+        </div>
+
+        <!-- Les autres champs : durée, nb_people, unit_price_ht, etc. -->
+        <div class="mb-3">
+          <%= form.label :duration, "Durée (en heures)" %>
+          <%= form.number_field :duration,
+                class: "form-control",
+                data: { item_form_target: "durationField" } %>
+        </div>
+        <div class="mb-3">
+          <%= form.label :nb_people, "Nombre de personnes" %>
+          <%= form.number_field :nb_people,
+                class: "form-control",
+                data: { item_form_target: "peopleField" } %>
+        </div>
+        <div class="mb-3">
+        <%= form.label :hourly_cost, "Taux horaire" %>
+          <%= form.number_field :hourly_cost,
+                class: "form-control",
+                data: { item_form_target: "hourlycostField" } %>
+        </div>
+        <div class="mb-3">
+          <%= form.label :human_margin, "Marge sur la main d'oeuvre" %>
+          <%= form.number_field :human_margin,
+                class: "form-control",
+                data: { item_form_target: "humanmarginField" } %>
+        </div>
+        <div class="mb-3">
+          <%= form.label :material, "Matériel nécessaire" %>
+          <%= form.text_field :material,
+                class: "form-control",
+                data: { item_form_target: "materialField" } %>
+        </div>
+        <div class="mb-3">
+          <%= form.label :unit_price_ht, "Prix unitaire (HT)" %>
+          <%= form.number_field :unit_price_ht,
+                class: "form-control",
+                data: { item_form_target: "puhtField" } %>
+        </div>
+        <div class="mb-3">
+          <%= form.label :material_margin, "Marge sur le matériel" %>
+          <%= form.number_field :material_margin,
+                class: "form-control",
+                data: { item_form_target: "materialmarginField" } %>
+        </div>
+        <div class="mb-3">
+          <%= form.label :quantity, "Quantité" %>
+          <%= form.number_field :quantity,
+                class: "form-control",
+                data: { item_form_target: "quantityField" } %>
+        </div>
+
+        <%= form.submit "Ajouter l'item", class: "link-button" %>
+      <% end %>
     </div>
 
-    <div class="mb-3">
-      <%= form.label :nb_people, "Nombre de personnes" %>
-      <%= form.number_field :nb_people, class: "form-control" %>
-    </div>
-
-    <div class="mb-3">
-      <%= form.label :material, "Matériel" %>
-      <%= form.text_field :material, class: "form-control" %>
-    </div>
-
-    <div class="mb-3">
-      <%= form.label :unit_price_ht, "Prix unitaire HT (€)" %>
-      <%= form.number_field :unit_price_ht, step: 0.01, class: "form-control" %>
-    </div>
-
-    <div class="mb-3">
-      <%= form.label :quantity, "Quantité" %>
-      <%= form.number_field :quantity, class: "form-control" %>
-    </div>
-
-    <%= form.submit "Ajouter l'item", class: "btn btn-primary" %>
-  <% end %>
-
-  <%= link_to "Retour à la liste des devis", quotes_path, class: "btn btn-secondary" %>
-
-
-
-  <%= link_to "Modifier", edit_quote_path(@quote), class: "btn btn-warning" %>
-  <%= link_to "Retour à la liste", quotes_path, class: "btn btn-secondary" %>
-  <%#= link_to "Supprimer", quote_path(@quote), method: :delete, data: { confirm: "Êtes-vous sûr ?" }, class: "btn btn-danger" %>
-  <%= button_to "Supprimer", quote_path(@quote), method: :delete, data: { confirm: "Êtes-vous sûr ?" } , class: "btn btn-danger" %>
-  <%= button_to "Dupliquer le devis", duplicate_quote_path(@quote), method: :post, class: "btn btn-primary" %>
+</div>
 
 <% else %>
   <div class="details formdiv" style="height: 400px;">

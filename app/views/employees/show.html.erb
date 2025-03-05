@@ -265,17 +265,20 @@
               </div>
             <% end %>
           </div>
-          <div class="message-timestamp">
-            <%= msg.full_name %> - <%= msg.created_at.strftime("%d/%m à %H:%M") %> - <% msg.recipient_id %> - <% msg.read_at %>
-            <% if msg.read_at.nil? && msg.recipient_id == current_user.id %>
-              <span class="unread-notification">Nouveau message</span>
-            <% end %>
-          </div>
-            <% if msg.read_at.nil? && msg.recipient_id == current_user.id %>
-              <button class="btn-mark-read" data-message-id="<%= msg.id %>">
-                Marquer comme lu
-              </button>
-            <% end %>
+      <div class="message-timestamp">
+        <%= msg.full_name %> - <%= msg.created_at.strftime("%d/%m à %H:%M") %>
+
+        <!-- On n’affiche « Lu / Non lu » que si c’est le message de l’utilisateur courant (l’émetteur). -->
+        <% if msg.user_id == current_user.id %>
+          <% if msg.read_at.nil? %>
+            <span style="color: red;">(Non lu)</span>
+          <% else %>
+            <span style="color: green;">(Lu)</span>
+          <% end %>
+        <% end %>
+      </div>
+
+
         </div>
       <% end %>
     </div>

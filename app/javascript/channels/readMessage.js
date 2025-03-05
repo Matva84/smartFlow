@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   function markMessageAsRead(messageId) {
+    console.log(`[DEBUG] markMessageAsRead => message ${messageId}`);
     fetch(`/messages/${messageId}/mark_as_read`, {
       method: "PATCH",
       headers: {
@@ -17,16 +18,13 @@ document.addEventListener("DOMContentLoaded", () => {
     .then(response => response.json())
     .then(data => {
       if (data.status === "ok") {
-        console.log(`Message ${messageId} marqué comme lu : ${data.read_at}`);
-        // Vous pouvez mettre à jour l’UI (retirer le bouton, etc.)
-        const btn = document.querySelector(`.btn-mark-read[data-message-id="${messageId}"]`);
-        if (btn) {
-          btn.remove();
-        }
+        console.log(`[DEBUG] message ${messageId} marqué comme lu côté serveur => ${data.read_at}`);
+        // On attend la diffusion de broadcast_read_status pour maj l'UI
       } else {
-        console.error("Erreur mark_as_read:", data);
+        console.error(`[DEBUG] Erreur mark_as_read => ${JSON.stringify(data)}`);
       }
     })
-    .catch(error => console.error("Erreur fetch:", error));
+    .catch(error => console.error(`[DEBUG] Exception mark_as_read => ${error}`));
   }
+
 });

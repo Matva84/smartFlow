@@ -4,7 +4,6 @@ class MessagesController < ApplicationController
   def create
     messageable = params[:messageable_type].constantize.find(params[:messageable_id])
 
-    # Créer le message
     message = Message.new(
       content: params[:message][:content],
       user: current_user,
@@ -12,11 +11,36 @@ class MessagesController < ApplicationController
       full_name: determine_full_name(current_user)
     )
 
-    if messageable.is_a?(Employee)
+    # ─────────────────────────────────────────────────────────────────────────────
+    # Gérer le cas Admin => Employé
+    # ─────────────────────────────────────────────────────────────────────────────
+    if current_user.role == 'admin' && messageable.is_a?(Employee)
+      # L'admin est l'expéditeur, l'employé (messageable) est le destinataire
       message.recipient_id = messageable.user_id
+      Rails.logger.debug "create => Admin (user_id=#{current_user.id}) envoie un message à l'employé user_id=#{messageable.user_id}"
+
+    # ─────────────────────────────────────────────────────────────────────────────
+    # Gérer le cas Employé => Admin
+    # ─────────────────────────────────────────────────────────────────────────────
+    elsif current_user.role == 'employee'
+      # L'employé est l'expéditeur, donc le destinataire est l'admin
+      # Trouver l'admin (selon votre logique : si vous avez un seul admin, ou un user particulier)
+      admin_user = User.find_by(role: 'admin')  # ou find_by(email: "admin@example.com")
+      if admin_user
+        message.recipient_id = admin_user.id
+        Rails.logger.debug "create => Employé (user_id=#{current_user.id}) envoie un message à l'admin user_id=#{admin_user.id}"
+      else
+        Rails.logger.error "create => AUCUN admin trouvé ! On laisse recipient_id=nil"
+      end
+
+    # ─────────────────────────────────────────────────────────────────────────────
+    # Autres cas éventuels
+    # ─────────────────────────────────────────────────────────────────────────────
+    else
+      Rails.logger.debug "create => Cas non géré : current_user.role=#{current_user.role}, messageable=#{messageable.inspect}"
     end
 
-    # Attacher les documents si présents
+    # Attacher des documents si présents
     if params[:message][:documents].present?
       params[:message][:documents].each do |doc|
         message.documents.attach(doc)
@@ -24,26 +48,26 @@ class MessagesController < ApplicationController
     end
 
     if message.save
-      # Au lieu de diffuser ici un payload
-      # on appelle la méthode de classe du channel
+      Rails.logger.debug "MessagesController#create => Message #{message.id} créé, recipient_id=#{message.recipient_id}, read_at=#{message.read_at.inspect}"
       CommunicationChannel.broadcast_message(message)
-
       render json: { status: 'ok' }
     else
+      Rails.logger.error "Erreur lors de la création du message : #{message.errors.full_messages.join(", ")}"
       render json: { status: 'error', errors: message.errors.full_messages }, status: :unprocessable_entity
     end
   end
-
+  
   def mark_as_read
     message = Message.find(params[:id])
-
     # Vérifier que current_user est le destinataire
-    # (Dans votre schéma, vous avez un champ `recipient_id` ou `employee_id` pour savoir qui est le destinataire)
     if message.recipient_id == current_user.id && message.read_at.nil?
-      message.mark_as_read!
+      Rails.logger.debug "MessagesController#mark_as_read => Marquage lu pour le message #{message.id}"
+      message.update(read_at: Time.current)
+      CommunicationChannel.broadcast_read_status(message)
       render json: { status: 'ok', read_at: message.read_at }
     else
-      render json: { status: 'error', message: "Impossible de marquer comme lu" }, status: :unprocessable_entity
+      Rails.logger.debug "MessagesController#mark_as_read => Impossible de marquer lu pour le message #{message.id} (recipient_id=#{message.recipient_id}, read_at=#{message.read_at.inspect})"
+      render json: { status: 'error' }, status: :unprocessable_entity
     end
   end
 

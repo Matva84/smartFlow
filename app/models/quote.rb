@@ -43,7 +43,13 @@ class Quote < ApplicationRecord
     "#{quote_prefix}_#{current_year}#{current_month}_#{(last_increment + 1).to_s.rjust(4, '0')}"
   end
 
+  def recalculate_total!
+    total_ht = items.sum(&:total_price_ht)  # si vous avez un champ total_price_ht dans Item
+    # ou vous pouvez faire le calcul en fonction des champs unit_price_ht * quantity, etc.
 
+    update(total: total_ht)
+  end
+  
   private
 
 

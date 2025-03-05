@@ -11,9 +11,9 @@
       <p><strong>Adresse :</strong> <%= @client.address %></p>
       <p><strong>RIB :</strong> <%= @client.rib %></p>
 
-      <%= link_to "Modifier", edit_client_path(@client) %> |
-      <%= link_to "Retour à la liste", clients_path %> |
-      <%= button_to "Supprimer", client_path(@client), method: :delete, data: { confirm: "Êtes-vous sûr ?" } %>
+      <%= link_to "Modifier", edit_client_path(@client), class:"link-button" %>
+      <%= link_to "Retour à la liste", clients_path, class:"link-button" %> 
+      <%= button_to "Supprimer", client_path(@client), method: :delete, data: { confirm: "Êtes-vous sûr ?" }, class:"link-button" %>
 
     </div>
   </div>

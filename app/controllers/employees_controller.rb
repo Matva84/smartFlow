@@ -112,8 +112,14 @@ class EmployeesController < ApplicationController
       end
     end
     @messages = Message.where(messageable: @employee).order(created_at: :asc)
-    Rails.logger.debug "Messages archivés pour l'employé #{@employee.id} : #{@messages.inspect}"
-  end
+    @messages.each do |msg|
+      if msg.recipient_id == current_user.id && msg.read_at.nil?
+        Rails.logger.debug "EmployeesController#show => Marquage lu pour le message #{msg.id}"
+        msg.update(read_at: Time.current)
+        CommunicationChannel.broadcast_read_status(msg)
+      end
+    end
+end
 
   def new
     @employee = Employee.new

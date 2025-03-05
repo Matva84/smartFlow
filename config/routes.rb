@@ -86,9 +86,18 @@ Rails.application.routes.draw do
     end
   end
   #resources :messages, only: [:create]
-  resources :messages, only: [:create] do
+  resources :messages do
     member do
       patch :mark_as_read
     end
   end
+  # config/routes.rb
+  resources :items, only: [:create, :update, :destroy] do
+    collection do
+      get :categories        # => items#categories
+      get :descriptions      # => items#descriptions
+      get :last_item_info    # => items#last_item_info
+    end
+  end
+
 end

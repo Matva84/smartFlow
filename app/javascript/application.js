@@ -13,6 +13,7 @@ import "./channels/chat";
 import "./channels/readMessage";
 import "./expenseCategory";
 import "./menu";
+import "./itemsDefinition"
 //import "./interactiveCard";
 
 import "@rails/actioncable"

@@ -1,14 +1,20 @@
 <% if user_signed_in? && current_user.employee.admin? %>
   <div class="flexinline">
     <div class="halfwidth formdiv">
-      <h1>Liste des clients</h1>
+
+      <div class="autoflexinline">
+        <h1>Liste des clients</h1>
+        <%= link_to "Ajouter un client", new_client_path,class: "link-button" %>
+      </div>
 
       <div>
         <h4>Filtrer par état de projet :</h4>
         <%= link_to "Tous les clients", clients_path(filter: 'all'), class: "btn-filter #{'active' if params[:filter].blank? || params[:filter] == 'all'}" %>
-        <%= link_to "Projet achevé", clients_path(filter: 'completed'), class: "btn-filter #{'active' if params[:filter] == 'completed'}" %>
-        <%= link_to "Projet en cours", clients_path(filter: 'in_progress'), class: "btn-filter #{'active' if params[:filter] == 'in_progress'}" %>
-        <%= link_to "Projet non débuté", clients_path(filter: 'not_started'), class: "btn-filter #{'active' if params[:filter] == 'not_started'}" %>
+        <div class="autoflexinline">
+          <%= link_to "Projet non débuté", clients_path(filter: 'not_started'), class: "btn-filter #{'active' if params[:filter] == 'not_started'}" %>
+          <%= link_to "Projet en cours", clients_path(filter: 'in_progress'), class: "btn-filter #{'active' if params[:filter] == 'in_progress'}" %>
+          <%= link_to "Projet achevé", clients_path(filter: 'completed'), class: "btn-filter #{'active' if params[:filter] == 'completed'}" %>
+        </div>
       </div>
 
       <table>
@@ -35,7 +41,6 @@
         </tbody>
       </table>
 
-      <%= link_to "Ajouter un client", new_client_path %>
     </div>
     <div class="halfwidth formdiv">
         <div id="map" style="height: 400px;"></div>
