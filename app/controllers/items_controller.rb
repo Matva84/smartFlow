@@ -1,27 +1,20 @@
 class ItemsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_quote, only: [:create]
-  before_action :set_item, only: [:destroy]
+  before_action :set_quote, only: [:create, :update, :destroy]
+  before_action :set_item, only: [:update, :destroy]
 
   def new
     @item = @quote.items.build
   end
 
   def create
+    @quote = Quote.find(params[:quote_id])
     @item = @quote.items.build(item_params)
-
-    #if @item.save
-    #  redirect_to quote_path(@quote), notice: "L'item a été ajouté avec succès."
-    #else
-    #  redirect_to quote_path(@quote), alert: "Une erreur est survenue lors de l'ajout de l'item."
-    #end
-    # Par exemple, si `duration` est vide, on cherche un Item équivalent
     if @item.duration.blank?
       existing = Item.where(category: @item.category, description: @item.description).order(created_at: :desc).first
       if existing
         @item.duration = existing.duration
         @item.nb_people = existing.nb_people
-        # etc. pour récupérer d’autres champs
       end
     end
 
@@ -34,6 +27,7 @@ class ItemsController < ApplicationController
       # En cas d’erreur de validation, on réaffiche la page du devis
       # avec les messages d’erreur (attention à gérer l’affichage)
       flash.now[:alert] = "Erreur lors de la création de l’item."
+      @categories = Item.distinct.pluck(:category).compact
       render "quotes/show"  # ou le template partiel qui contient le formulaire
     end
   end
@@ -56,6 +50,7 @@ class ItemsController < ApplicationController
       redirect_to quote_path(@quote), notice: "Item mis à jour avec succès."
     else
       flash.now[:alert] = "Erreur lors de la mise à jour de l’item."
+      @categories = Item.distinct.pluck(:category).compact
       render "quotes/show"
     end
   end
@@ -106,6 +101,21 @@ class ItemsController < ApplicationController
     end
   end
 
+  def descriptions
+    # On récupère la catégorie envoyée par le paramètre `?category=...`
+    category = params[:category]
+
+    # On filtre les items qui ont cette catégorie,
+    # et on extrait la liste *unique* de descriptions (sans doublons, ni nil).
+    descriptions = Item.where(category: category).pluck(:description).compact.uniq
+
+    # On renvoie en JSON
+    respond_to do |format|
+      format.json { render json: descriptions }
+    end
+  end
+
+
   private
 
   #def set_quote
@@ -144,13 +154,8 @@ class ItemsController < ApplicationController
       :description,
       :duration,
       :nb_people,
-      :material,
-      :unit_price_ht,
-      :quantity,
       :hourly_cost,
-      :human_margin,
-      :vat_value
-      # + tous les attributs que vous avez dans votre Item
+      :human_margin
     )
   end
 end

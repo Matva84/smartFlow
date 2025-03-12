@@ -1,20 +1,23 @@
 // Configure your import map in config/importmap.rb. Read more: https://github.com/rails/importmap-rails
+import "./expenseCategory";
+import "./global_expenses_chart";
+import "./graphExpense";
 import "./holidays";
-import "./redDotNotification";
+import "./itemsDefinition";
+import "./menu";
 import "./modaleEvent";
 import "./modaleExpense";
-import "./graphExpense";
+import "./redDotNotification";
 import "./updateGraphExpense";
-import "./global_expenses_chart";
-//import "./channels/communication_channel";
-//import "./channels/employee_chat";
+import "./modaleItem";
+
 import "./channels/consumer";
 import "./channels/chat";
 import "./channels/readMessage";
-import "./expenseCategory";
-import "./menu";
-import "./itemsDefinition"
+
 //import "./interactiveCard";
+//import "./channels/communication_channel";
+//import "./channels/employee_chat";
 
 import "@rails/actioncable"
 //import "./overTime";

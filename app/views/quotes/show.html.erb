@@ -52,7 +52,83 @@
 
   <div class="autoflexinline">
     <div class="details formdiv">
-      <h2>Items associés</h2>
+      <h2>Contenu du devis</h2>
+      <%= link_to "#", class: "link-button", id: "openModalItem" do %>
+              <strong>Ajouter un item</strong>
+            <% end %>
+
+        <!-- Modale pour ajouter un évenement -->
+        <div id="itemModal" class="modal">
+          <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addItemModalLabel">Ajouter un nouvel item au devis</h5>
+                <span class="close">&times;</span>
+              </div>
+              <div class="modal-body">
+                <!-- Le formulaire d'ajout d'Item -->
+                <%= form_with(model: [@quote, Item.new], local: true) do |form| %>
+                    <!-- Champ Catégorie -->
+                  <div class="mb-3">
+                    <%= form.label :category, "Catégorie" %>
+                    <!-- id='category_field' important pour qu'on le récupère en JS -->
+                    <!-- list='category-list' => auto-complétion existante -->
+                    <%= form.text_field :category,
+                          id: "category_field",
+                          list: "category-list",
+                          class: "form-control",
+                          oninput: "fetchDescriptions()" %>
+
+                    <!-- Datalist des catégories existantes -->
+                    <datalist id="category-list">
+                      <% @categories.each do |cat| %>
+                        <option value="<%= cat %>">
+                      <% end %>
+                    </datalist>
+                  </div>
+                  <!-- Description -->
+                  <div class="mb-3">
+                    <%= form.label :description, "Description" %>
+                    <%= form.text_field :description,
+                          list: "description-list",
+                          class: "form-control" %>
+                    <datalist id="description-list">
+                      <% @descriptions.each do |desc| %>
+                        <option value="<%= desc %>">
+                      <% end %>
+                    </datalist>
+                  </div>
+
+                  <!-- Durée -->
+                  <div class="mb-3">
+                    <%= form.label :duration, "Durée (en heures)" %>
+                    <%= form.number_field :duration, class: "form-control" %>
+                  </div>
+
+                  <!-- Nombre de personnes -->
+                  <div class="mb-3">
+                    <%= form.label :nb_people, "Nombre de personnes" %>
+                    <%= form.number_field :nb_people, class: "form-control" %>
+                  </div>
+
+                  <!-- Taux horaire -->
+                  <div class="mb-3">
+                    <%= form.label :hourly_cost, "Taux horaire" %>
+                    <%= form.number_field :hourly_cost, class: "form-control" %>
+                  </div>
+
+                  <!-- Marge main d'oeuvre -->
+                  <div class="mb-3">
+                    <%= form.label :human_margin, "Marge sur la main d'oeuvre" %>
+                    <%= form.number_field :human_margin, class: "form-control" %>
+                  </div>
+
+                  <%= form.submit "Ajouter l'item", class: "btn btn-success" %>
+                <% end %>
+                <!-- Fin du formulaire d'item -->
+              </div>
+          </div>
+        </div>
+
       <% if @quote.items.any? %>
         <table class="table table-striped">
           <!--<thead>
@@ -75,23 +151,79 @@
                 <td><%= item.nb_people %></td>
                 <td><%= item.material %></td>
                 <td><%= number_to_currency(item.total_price_ht, unit: "€") %></td>-->
-                <td>
+                <td class="quote-item">
                   <!-- Formulaire pour modifier cet item -->
-                  <%= form_with(model: [@quote, item], url: quote_item_path(@quote, item), method: :patch, local: true, class: "d-flex align-items-center gap-2") do |form| %>
-                    <%= form.text_field :category, class: "form-control form-control-sm", placeholder: "Catégorie" %>
-                    <%= form.text_field :description, class: "form-control form-control-sm", placeholder: "Description" %>
-                    <%= form.number_field :duration, class: "form-control form-control-sm", placeholder: "Durée (heures)" %>
-                    <%= form.number_field :nb_people, class: "form-control form-control-sm", placeholder: "Nb personnes" %>
-                    <%= form.number_field :hourly_cost, class: "form-control form-control-sm", placeholder: "Taux horaire" %>
-                    <%= form.number_field :human_margin, class: "form-control form-control-sm", placeholder: "Marge main d'oeuvre" %>
-                    <%= form.text_field :material, class: "form-control form-control-sm", placeholder: "Matériel" %>
-                    <%= form.text_field :unit_price_ht, class: "form-control form-control-sm", placeholder: "Prix unitaire" %>
-                    <%= form.text_field :material_margin, class: "form-control form-control-sm", placeholder: "Marge" %>
-                    <%= form.text_field :quantity, class: "form-control form-control-sm", placeholder: "Quantité" %>
-                    <%= form.number_field :total_price_ht, class: "form-control form-control-sm", placeholder: "Coût total HT" %>
-                    <%= form.submit "Modifier", class: "btn btn-primary btn-sm" %>
-                    <%= button_to "Supprimer", quote_item_path(@quote, item), method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cet item ?" }, class: "btn btn-danger btn-sm mt-2" %>
+                  <%= form_with(model: [@quote, item], url: quote_item_path(@quote, item), method: :patch, local: true, class: "") do |form| %>
+                    <div class="tdItem">
+                      <div class="tdDesc">
+                        <%= form.text_field :category, class: "form-control form-control-sm quote-item-category quoteMini", placeholder: "Catégorie" %>
+                        <div class="tdLine">
+                          <%= form.text_field :description, class: "form-control form-control-sm quote-item-description quoteMini", placeholder: "Description" %>
+                          <%= form.number_field :duration, class: "form-control form-control-sm quoteMini tdNumbers", placeholder: "Durée (heures)" %>
+                          <%= form.number_field :nb_people, class: "form-control form-control-sm quoteMini tdNumbers", placeholder: "Nb personnes" %>
+                          <%= form.number_field :hourly_cost, class: "form-control form-control-sm quoteMini tdNumbers", placeholder: "Taux horaire" %>
+                          <%= form.number_field :human_margin, class: "form-control form-control-sm quoteMini tdNumbers", placeholder: "Marge main d'oeuvre" %>
+                          <%= form.number_field :total_price_ht, class: "form-control form-control-sm quoteMini tdNumbers", placeholder: "Coût total HT" %>
+                        </div>
+                        <div class="tdLine">
+                          <%= form.text_field :material, class: "form-control form-control-sm quote-item-material quoteMini", placeholder: "Matériel" %>
+                          <%= form.text_field :unit_price_ht, class: "form-control form-control-sm quoteMini tdNumbers", placeholder: "Prix unitaire" %>
+                          <%= form.text_field :material_margin, class: "form-control form-control-sm quoteMini tdNumbers", placeholder: "Marge" %>
+                          <%= form.text_field :quantity, class: "form-control form-control-sm quoteMini tdNumbers", placeholder: "Quantité" %>
+                        </div>
+                      </div>
+                      <div class="buttonsInCol">
+                        <button type="button" class="link-button" data-bs-toggle="modal" data-bs-target="#addMaterialModal-<%= item.id %>">
+                          Ajouter du matériel
+                        </button>
+                        <%= form.submit "Modifier", class: "link-button" %>
+                        <%= button_to "Supprimer", quote_item_path(@quote, item), method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cet item ?" }, class: "link-button" %>
 
+                          <!-- La modale d'ajout de matériel pour CET item -->
+                          <div class="modal fade" id="addMaterialModal-<%= item.id %>" tabindex="-1" aria-labelledby="addMaterialModalLabel-<%= item.id %>" aria-hidden="true">
+                            <div class="modal-dialog">
+                              <div class="modal-content">
+
+                                <div class="modal-header">
+                                  <h5 class="modal-title" id="addMaterialModalLabel-<%= item.id %>">
+                                    Ajouter du matériel pour l'item : <%= item.description %>
+                                  </h5>
+                                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+
+                                <div class="modal-body">
+                                  <%= form_with(model: [@quote, item, Material.new], local: true) do |mat_form| %>
+                                    <div class="mb-3">
+                                      <%= mat_form.label :name, "Matériel" %>
+                                      <%= mat_form.text_field :name, class: "form-control" %>
+                                    </div>
+
+                                    <div class="mb-3">
+                                      <%= mat_form.label :unit_price, "Prix unitaire (HT)" %>
+                                      <%= mat_form.number_field :unit_price, class: "form-control" %>
+                                    </div>
+
+                                    <div class="mb-3">
+                                      <%= mat_form.label :margin, "Marge sur le matériel" %>
+                                      <%= mat_form.number_field :margin, class: "form-control" %>
+                                    </div>
+
+                                    <div class="mb-3">
+                                      <%= mat_form.label :quantity, "Quantité" %>
+                                      <%= mat_form.number_field :quantity, class: "form-control" %>
+                                    </div>
+
+                                    <%= mat_form.submit "Ajouter le matériel", class: "btn btn-primary" %>
+                                  <% end %>
+                                </div>
+
+                              </div>
+                            </div>
+                          </div>
+                          <!-- Fin de la modale pour le matériel -->
+
+                      </div>
+                    </div>
       <!--   t.decimal "human_total_cost"
           t.decimal "total_price_ht"
           t.decimal "material_cost"
@@ -109,29 +241,46 @@
         <p>Aucun item associé à ce devis.</p>
       <% end %>
     </div>
+  </div>
 
+  <div class="autoflexinline">
       <!-- app/views/quotes/show.html.erb -->
     <div class="details formdiv">
       <h2>Ajouter un nouvel item</h2>
 
       <%= form_with(model: [@quote, @quote.items.build], local: true, html: { id: "new-item-form" }) do |form| %>
 
-        <!-- Exemple de champ "Catégorie" -->
+      <!-- Champ Catégorie -->
         <div class="mb-3">
           <%= form.label :category, "Catégorie" %>
-          <!-- On utilise un text_field qu’on complètera avec datalist ou JS (Stimulus, etc.) -->
+          <!-- id='category_field' important pour qu'on le récupère en JS -->
+          <!-- list='category-list' => auto-complétion existante -->
           <%= form.text_field :category,
+                id: "category_field",
+                list: "category-list",
                 class: "form-control",
-                data: { action: "change->item-form#onCategoryChange", item_form_target: "categoryField" } %>
-          <!-- Eventuellement : <datalist> ... </datalist> pour autocompléter en HTML5 -->
+                oninput: "fetchDescriptions()" %>
+
+          <!-- Datalist des catégories existantes -->
+          <datalist id="category-list">
+            <% @categories.each do |cat| %>
+              <option value="<%= cat %>">
+            <% end %>
+          </datalist>
         </div>
 
-        <!-- Champ "Description" -->
+        <!-- Champ Description, avec un datalist pour suggérer TOUTES les descriptions -->
         <div class="mb-3">
           <%= form.label :description, "Description" %>
           <%= form.text_field :description,
-                class: "form-control",
-                data: { action: "change->item-form#onDescriptionChange", item_form_target: "descriptionField" } %>
+                list: "description-list",
+                class: "form-control" %>
+
+          <datalist id="description-list">
+            <% @descriptions.each do |desc| %>
+              <option value="<%= desc %>">
+            <% end %>
+          </datalist>
         </div>
 
         <!-- Les autres champs : durée, nb_people, unit_price_ht, etc. -->
@@ -195,3 +344,45 @@
     <h1>Vous n'êtes pas autorisé à voir cette page.</h1>
   </div>
 <% end %>
+
+
+
+
+
+
+
+
+<!-- Script JavaScript pour mettre à jour la liste des descriptions en fonction de la catégorie -->
+<script>
+function fetchDescriptions() {
+  // On récupère la catégorie actuelle
+  let category = document.getElementById("category_field").value;
+
+  // Si la catégorie est vide, on efface la liste
+  if (!category) {
+    document.getElementById("description-list").innerHTML = "";
+    return;
+  }
+
+  // Appel AJAX vers l’action items#descriptions
+  // /items/descriptions?category=XXX
+  fetch("/items/descriptions.json?category=" + encodeURIComponent(category))
+    .then(response => response.json())
+    .then(data => {
+      // data est un tableau de descriptions
+      let dl = document.getElementById("description-list");
+      // On vide d’abord l’ancien contenu
+      dl.innerHTML = "";
+
+      // Pour chaque description, on crée un <option>
+      data.forEach(function(desc) {
+        let option = document.createElement("option");
+        option.value = desc;
+        dl.appendChild(option);
+      });
+    })
+    .catch((error) => {
+      console.error("Erreur dans fetchDescriptions()", error);
+    });
+}
+</script>

@@ -33,6 +33,8 @@ class QuotesController < ApplicationController
 
   def show
     @quote = Quote.find(params[:id])
+    @categories = Item.distinct.pluck(:category).compact
+    @descriptions = Item.distinct.pluck(:description).compact
   end
 
   def new

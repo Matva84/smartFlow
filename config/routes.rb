@@ -1,4 +1,9 @@
 Rails.application.routes.draw do
+  get "materials/new"
+  get "materials/create"
+  get "materials/edit"
+  get "materials/update"
+  get "materials/destroy"
   get "events/index"
   get "events/new"
   get "events/create"
@@ -99,5 +104,17 @@ Rails.application.routes.draw do
       get :last_item_info    # => items#last_item_info
     end
   end
+
+  resources :quotes do
+    resources :items, only: [:create, :update, :destroy]
+  end
+  resources :quotes do
+    resources :items do
+      resources :materials, only: [:new, :create, :edit, :update, :destroy]
+    end
+  end
+  # On ajoute une route pour renvoyer la liste des descriptions en JSON
+  # (vous pouvez l'imbriquer sous :items ou la mettre à part)
+  get "/items/descriptions", to: "items#descriptions"
 
 end

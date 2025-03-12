@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_21_201904) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_12_060510) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -129,6 +129,17 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_21_201904) do
     t.index ["quote_id"], name: "index_items_on_quote_id"
   end
 
+  create_table "materials", force: :cascade do |t|
+    t.string "name"
+    t.decimal "unit_price"
+    t.decimal "margin"
+    t.integer "quantity"
+    t.bigint "item_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["item_id"], name: "index_materials_on_item_id"
+  end
+
   create_table "messages", force: :cascade do |t|
     t.text "content"
     t.bigint "user_id", null: false
@@ -208,6 +219,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_21_201904) do
   add_foreign_key "events", "employees"
   add_foreign_key "expenses", "employees"
   add_foreign_key "items", "quotes"
+  add_foreign_key "materials", "items"
   add_foreign_key "messages", "employees"
   add_foreign_key "messages", "users"
   add_foreign_key "projects", "clients"

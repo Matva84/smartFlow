@@ -1,0 +1,65 @@
+.quoteMini {
+  background-color: white !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  color: #000 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.quote-item-category {
+  font-size: 18px !important;
+  font-weight: 300 !important;
+  text-transform: uppercase !important;
+  width: 100% !important;
+}
+.quote-item-description {
+  font-size: 16px !important;
+  font-weight: 300 !important;
+  text-transform:capitalize !important;
+  width: 500px !important;
+}
+.quote-item-material {
+  font-size: 14px !important;
+  font-weight: 300 !important;
+  text-transform:capitalize !important;
+  width: 500px !important;
+  padding-left: 30px !important;
+}
+.quote-item {
+  background-color: white !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  align-items: left !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+.tdDesc {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: left !important;
+  align-items: left !important;
+}
+.tdItem {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: space-evenly !important;
+  align-items: center !important;
+  width: 100%;
+}
+.tdLine {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: left !important;
+  align-items: left !important;
+}
+.tdNumbers {
+  width: 80px;
+}
+.buttonsInCol {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: left !important;
+  align-items: left !important;
+}
