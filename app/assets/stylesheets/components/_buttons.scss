@@ -20,7 +20,30 @@
   color: black;
   text-decoration: none;
 }
+.link-buttonQuote {
+  display: inline-block;
+  margin: 0px;
+  margin-top: 0px;
 
+  padding: 6px 14px;
+  background-color: lightgrey;
+  color: white;
+  text-decoration: none;
+  border-radius: 16px;
+  font-size: 14px;
+  font-weight: 300;
+  border: 1px solid black;
+  transition: background-color 0.5s ease;
+}
+
+.link-button:hover {
+  background-color: white;
+  text-decoration: underline;
+  color: black;
+  text-decoration: none;
+}
+
+/*
 .link-button:focus {
   outline: none;
   box-shadow: 0 0 4px #007bff;
