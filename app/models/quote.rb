@@ -44,12 +44,22 @@ class Quote < ApplicationRecord
   end
 
   def recalculate_total!
-    total_ht = items.sum(&:total_price_ht)  # si vous avez un champ total_price_ht dans Item
-    # ou vous pouvez faire le calcul en fonction des champs unit_price_ht * quantity, etc.
+      # Somme des totaux et marges de tous les items
+      total_items = items.sum(&:human_total_cost)
+      margin_items = items.sum(&:total_margin)
 
-    update(total: total_ht)
+      # Optionnel : si vos items ont des matériaux à additionner séparément,
+      # vous pouvez, par exemple, les ajouter ainsi (si les colonnes existent dans Material)
+      total_materials = items.joins(:materials).sum("materials.total_price")
+      margin_materials = items.joins(:materials).sum("materials.total_margin")
+
+      # Si vous souhaitez combiner les deux :
+      total_ht = total_items + total_materials
+      total_margin = margin_items + margin_materials
+
+      update(total: total_ht, margin: total_margin)
   end
-  
+
   private
 
 

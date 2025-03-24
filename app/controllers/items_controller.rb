@@ -19,9 +19,7 @@ class ItemsController < ApplicationController
     end
 
     if @item.save
-      # Méthode (optionnelle) pour recalculer le total du devis
       @quote.recalculate_total!
-
       redirect_to quote_path(@quote), notice: "Item ajouté avec succès."
     else
       # En cas d’erreur de validation, on réaffiche la page du devis

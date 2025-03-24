@@ -57,6 +57,11 @@
           <%= link_to "#", class: "link-buttonQuote", id: "openModalItem" do %>
               <strong>Ajouter un item</strong>
             <% end %>
+            <p class="price">Total HT : <%= number_to_currency(@quote.total, unit: "€") %></p>
+            <p class="margin">Marge : <%= number_to_currency(@quote.margin, unit: "€") %>
+              (<%= @quote.total.to_f > 0 ? (@quote.margin.to_f / @quote.total.to_f * 100).round(2) : 0 %>%)
+            </p>
+
       </div>
 
         <!-- Modale pour ajouter un évenement -->
@@ -134,26 +139,27 @@
       <div class="quoteDetails">
         <% if @quote.items.any? %>
           <table class="">
-            <!--<thead>
+            <thead>
               <tr>
-                <th>Catégorie</th>
-                <th>Description</th>
-                <th>Durée</th>
-                <th>Nb personnes</th>
-                <th>Matériel</th>
-                <th>Coût total HT</th>
-                <th>Actions</th>
+                <td class="quote-item">
+                  <div class="tdItem">
+                    <div class="tdDesc">
+                      <div class="tdLine">
+                          <p class=""> </p>
+                          <p class=" ">Durée (h)</p>
+                          <p class="">Nb. intervenants</p>
+                          <p class="">Taux horaire moyen (€)</p>
+                          <p class="">Marge sur la main d'oeuvre (%)</p>
+                          <p class="">Total HT (€)</p>
+                      </div>
+                    </div>
+                  </div>
+                </td>
               </tr>
-            </thead>-->
+            </thead>
             <tbody>
               <% @quote.items.each do |item| %>
                 <tr>
-                  <!--<td><%= item.category %></td>
-                  <td><%= item.description %></td>
-                  <td><%= item.duration %> heures</td>
-                  <td><%= item.nb_people %></td>
-                  <td><%= item.material %></td>
-                  <td><%= number_to_currency(item.total_price_ht, unit: "€") %></td>-->
                   <td class="quote-item">
                     <!-- Formulaire pour modifier cet item -->
                     <%= form_with(model: [@quote, item], url: quote_item_path(@quote, item), method: :patch, local: true, class: "") do |form| %>
@@ -167,37 +173,25 @@
                             <%= form.number_field :nb_people, class: "form-control form-control-sm quoteMini tdNumbers", placeholder: "Nb personnes" %>
                             <%= form.number_field :hourly_cost, class: "form-control form-control-sm quoteMini tdNumbers", placeholder: "Taux horaire" %>
                             <%= form.number_field :human_margin, class: "form-control form-control-sm quoteMini tdNumbers", placeholder: "Marge main d'oeuvre" %>
-                            <%= form.number_field :total_price_ht, class: "form-control form-control-sm quoteMini tdNumbers", placeholder: "Coût total HT" %>
+
+                            <p>Total HT : <%= number_to_currency(item.human_total_cost, unit: "€") %></p>
+                            <p>Marge : <%= number_to_currency(item.total_margin, unit: "€") %></p>
                           </div>
-                          <% if item.material.present? ||
-                              item.unit_price_ht.present? ||
-                              item.material_margin.present? ||
-                              item.quantity.present? %>
-                          <div class="tdLine">
-                            <%= form.text_field :material, class: "form-control form-control-sm quote-item-material quoteMini", placeholder: "Matériel" %>
-                            <%= form.text_field :unit_price_ht, class: "form-control form-control-sm quoteMini tdNumbers", placeholder: "Prix unitaire" %>
-                            <%= form.text_field :material_margin, class: "form-control form-control-sm quoteMini tdNumbers", placeholder: "Marge" %>
-                            <%= form.text_field :quantity, class: "form-control form-control-sm quoteMini tdNumbers", placeholder: "Quantité" %>
-                          </div>
-                        <% end %>
+
                         </div>
                         <div class="buttonsInCol">
-                          <button type="button" class="link-buttonQuote" data-bs-toggle="modal" data-bs-target="#addMaterialModal-<%= item.id %>">
-                            Ajouter du matériel
-                          </button>
+                          <%= link_to "#", class: "link-buttonQuote", id: "addMaterialModal-#{item.id}" do %>
+                            <strong>Ajouter du matériel</strong>
+                          <% end %>
                           <%= form.submit "Modifier", class: "link-buttonQuote" %>
-                          <%= button_to "Supprimer", quote_item_path(@quote, item), method: :delete, data: { confirm: "Êtes-vous sûr de vouloir supprimer cet item ?" }, class: "link-buttonQuote" %>
+                          <%= button_to "Supprimer",quote_item_path(@quote, item),method: :delete,data: { confirm: "Êtes-vous sûr de vouloir supprimer cet item ?" }, class: "link-buttonQuote" %>
 
                             <!-- La modale d'ajout de matériel pour CET item -->
-                            <div class="modal fade" id="addMaterialModal-<%= item.id %>" tabindex="-1" aria-labelledby="addMaterialModalLabel-<%= item.id %>" aria-hidden="true">
-                              <div class="modal-dialog">
+                            <div id="itemModal2-<%= item.id %>" class="modal">
                                 <div class="modal-content">
-
                                   <div class="modal-header">
-                                    <h5 class="modal-title" id="addMaterialModalLabel-<%= item.id %>">
-                                      Ajouter du matériel pour l'item : <%= item.description %>
-                                    </h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    <h5 class="modal-title" id="addItemModalLabel">Ajouter du matériel pour l'item : <%= item.description %></h5>
+                                    <span class="close2">&times;</span>
                                   </div>
 
                                   <div class="modal-body">
@@ -208,13 +202,8 @@
                                       </div>
 
                                       <div class="mb-3">
-                                        <%= mat_form.label :unit_price, "Prix unitaire (HT)" %>
+                                        <%= mat_form.label :unit_price, "Prix unitaire (€ HT)" %>
                                         <%= mat_form.number_field :unit_price, class: "form-control" %>
-                                      </div>
-
-                                      <div class="mb-3">
-                                        <%= mat_form.label :margin, "Marge sur le matériel" %>
-                                        <%= mat_form.number_field :margin, class: "form-control" %>
                                       </div>
 
                                       <div class="mb-3">
@@ -222,25 +211,35 @@
                                         <%= mat_form.number_field :quantity, class: "form-control" %>
                                       </div>
 
+                                      <div class="mb-3">
+                                        <%= mat_form.label :margin, "Marge sur le matériel (%)" %>
+                                        <%= mat_form.number_field :margin, class: "form-control" %>
+                                      </div>
+
                                       <%= mat_form.submit "Ajouter le matériel", class: "btn btn-primary" %>
                                     <% end %>
                                   </div>
 
                                 </div>
-                              </div>
                             </div>
-                            <!-- Fin de la modale pour le matériel -->
-
+                          </div>
                         </div>
-                      </div>
-        <!--   t.decimal "human_total_cost"
-            t.decimal "total_price_ht"
-            t.decimal "material_cost"
-            t.decimal "total_cumulative"
-            t.decimal "total_margin" -->
-
                     <% end %>
-                    <!-- Bouton pour supprimer cet item -->
+
+                          <% if item.materials.any? %>
+                            <div class="buttonsInCol">
+                              <% item.materials.each do |mat| %>
+                                <p class="material-list">
+                                  • <%= mat.name %> (Qté: <%= mat.quantity %>, PU HT: <%= mat.unit_price %>€, marge: <%= mat.margin %>%)
+                                  >> Total HT: <%= mat.total_price %>€ dont marge <%= mat.total_margin %>€
+                                  <%= button_to quote_item_material_path(@quote, item, mat), method: :delete, class: "btn btn-reject" do %>
+                                    <i class="fa-solid fa-xmark"></i>
+                                  <% end %>
+                                </p>
+                              <% end %>
+                            </div>
+                          <% end %>
+
                   </td>
                 </tr>
               <% end %>
@@ -252,97 +251,6 @@
       </div>
     </div>
   </div>
-
-<!--
-  <div class="autoflexinline">
-
-    <div class="details formdiv">
-      <h2>Ajouter un nouvel item</h2>
-
-      <%= form_with(model: [@quote, @quote.items.build], local: true, html: { id: "new-item-form" }) do |form| %>
-
-        <div class="mb-3">
-          <%= form.label :category, "Catégorie" %>
-
-          <%= form.text_field :category,
-                id: "category_field",
-                list: "category-list",
-                class: "form-control",
-                oninput: "fetchDescriptions()" %>
-
-          <datalist id="category-list">
-            <% @categories.each do |cat| %>
-              <option value="<%= cat %>">
-            <% end %>
-          </datalist>
-        </div>
-
-        <div class="mb-3">
-          <%= form.label :description, "Description" %>
-          <%= form.text_field :description,
-                list: "description-list",
-                class: "form-control" %>
-
-          <datalist id="description-list">
-            <% @descriptions.each do |desc| %>
-              <option value="<%= desc %>">
-            <% end %>
-          </datalist>
-        </div>
-
-        <div class="mb-3">
-          <%= form.label :duration, "Durée (en heures)" %>
-          <%= form.number_field :duration,
-                class: "form-control",
-                data: { item_form_target: "durationField" } %>
-        </div>
-        <div class="mb-3">
-          <%= form.label :nb_people, "Nombre de personnes" %>
-          <%= form.number_field :nb_people,
-                class: "form-control",
-                data: { item_form_target: "peopleField" } %>
-        </div>
-        <div class="mb-3">
-        <%= form.label :hourly_cost, "Taux horaire" %>
-          <%= form.number_field :hourly_cost,
-                class: "form-control",
-                data: { item_form_target: "hourlycostField" } %>
-        </div>
-        <div class="mb-3">
-          <%= form.label :human_margin, "Marge sur la main d'oeuvre" %>
-          <%= form.number_field :human_margin,
-                class: "form-control",
-                data: { item_form_target: "humanmarginField" } %>
-        </div>
-        <div class="mb-3">
-          <%= form.label :material, "Matériel nécessaire" %>
-          <%= form.text_field :material,
-                class: "form-control",
-                data: { item_form_target: "materialField" } %>
-        </div>
-        <div class="mb-3">
-          <%= form.label :unit_price_ht, "Prix unitaire (HT)" %>
-          <%= form.number_field :unit_price_ht,
-                class: "form-control",
-                data: { item_form_target: "puhtField" } %>
-        </div>
-        <div class="mb-3">
-          <%= form.label :material_margin, "Marge sur le matériel" %>
-          <%= form.number_field :material_margin,
-                class: "form-control",
-                data: { item_form_target: "materialmarginField" } %>
-        </div>
-        <div class="mb-3">
-          <%= form.label :quantity, "Quantité" %>
-          <%= form.number_field :quantity,
-                class: "form-control",
-                data: { item_form_target: "quantityField" } %>
-        </div>
-
-        <%= form.submit "Ajouter l'item", class: "link-button" %>
-      <% end %>
-    </div>
--->
 </div>
 
 <% else %>
