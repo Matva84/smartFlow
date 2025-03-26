@@ -1,7 +1,8 @@
 <% if user_signed_in? && current_user.employee.admin? %>
   <h1>Paramètres</h1>
 
-  <%= form_with url: update_multiple_settings_path, method: :patch, local: true do %>
+  <!-- On ajoute 'multipart: true' pour autoriser l'upload de fichiers -->
+  <%= form_with url: update_multiple_settings_path, method: :patch, local: true, multipart: true do %>
     <table class="table">
       <thead>
         <tr>
@@ -20,6 +21,8 @@
                   <%= check_box_tag "settings[#{setting.id}]", "1", setting.parsed_value %>
               <% when "float" %>
                   <%= number_field_tag "settings[#{setting.id}]", setting.parsed_value, step: "any" %>
+              <% when "file" %>
+                   <%= file_field_tag "settings[#{setting.id}]", accept: "image/*" %>
               <% else %>
                   <%= text_field_tag "settings[#{setting.id}]", setting.value %>
               <% end %>
@@ -29,6 +32,7 @@
       </tbody>
     </table>
     <%= submit_tag "Valider", class: "link-button" %>
+
   <% end %>
 <% else %>
   <div class="details formdiv" style="height: 400px;">

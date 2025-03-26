@@ -1,4 +1,6 @@
 class Setting < ApplicationRecord
+  has_one_attached :file_upload
+
   def self.get(key)
     find_by(key: key)&.value
   end

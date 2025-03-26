@@ -194,9 +194,19 @@ end
 puts "✅ Notes de frais générées pour chaque employé avec le statut 'en attente'."
 
 # Paramètres globaux
+
+Setting.create!(key: "company_name", value: true, label: "Nom de la société", value_type: "string")
+Setting.create!(key: "company_address", value: true, label: "Addresse de la société", value_type: "string")
+Setting.create!(key: "company_siren", value: true, label: "SIREN/SIRET de la société", value_type: "string")
+Setting.create!(key: "company_email", value: true, label: "Email", value_type: "string")
+Setting.create!(key: "company_phone", value: true, label: "Téléphone", value_type: "string")
+Setting.create!(key: "company_contact", value: true, label: "Contact", value_type: "string")
+Setting.create!(key: "company_website", value: true, label: "Site web", value_type: "string")
+
 Setting.create!(key: "labor_tva", value: 20.0, label:"TVA sur la main d'oeuvre", value_type: "float")
 Setting.create!(key: "material_tva", value: 5.5, label:"TVA sur le matériel", value_type: "float")
 Setting.create!(key: "quote_prefix", value: "Relax_", label:"Préfix pour les devis", value_type: "string")
 Setting.create!(key: "expenses_enabled", value: true, label: "Activer les notes de frais", value_type: "boolean")
+Setting.create!(key: "company_logo",label: "Logo de la société",value_type: "file", value: "")
 
 puts "✅ Seeding completed successfully!"

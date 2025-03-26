@@ -57,6 +57,9 @@ gem 'groupdate'
 gem 'redis'
 gem 'geocoder'
 gem 'image_processing', '~> 1.2'
+gem 'wicked_pdf'
+gem 'wkhtmltopdf-binary'
+gem 'grover'
 
 
 group :development, :test do

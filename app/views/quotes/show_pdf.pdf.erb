@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Devis <%= @quote.number %></title>
+  <style>
+    /* Styles de base pour l'exemple */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      color: #333;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+    .header {
+      padding: 20px;
+      border-bottom: 2px solid #ddd;
+    }
+    .header .company-info {
+      text-align: right;
+      font-size: 12px;
+      color: #666;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .invoice-top {
+      display: flex;
+      justify-content: space-between;
+      padding: 20px;
+      border-bottom: 1px solid #eee;
+    }
+    .invoice-top .recipient,
+    .invoice-top .invoice-details {
+      width: 48%;
+    }
+    .invoice-top h2 {
+      margin-top: 0;
+      font-size: 16px;
+      margin-bottom: 5px;
+    }
+    .invoice-top p {
+      margin: 4px 0;
+    }
+
+    .items {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+    .items thead {
+      background: #f9f9f9;
+    }
+    .items th,
+    .items td {
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+    .items th {
+      font-weight: bold;
+    }
+    .total-section {
+      margin: 20px 0;
+      text-align: right;
+      padding-right: 20px;
+    }
+    .total-section p {
+      margin: 4px 0;
+    }
+    .conditions {
+      padding: 20px;
+      font-size: 12px;
+      color: #555;
+    }
+
+    .footer {
+      text-align: center;
+      font-size: 12px;
+      color: #aaa;
+      padding: 10px;
+      border-top: 1px solid #eee;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Entête / Logo + Coordonnées société -->
+  <div class="header">
+    <h1><%= Setting.find_by(key: 'company_name')&.parsed_value %></h1>
+
+    <div class="company-info">
+      <%= Setting.find_by(key: 'company_address')&.parsed_value %><br>
+      SIREN/SIRET : <%= Setting.find_by(key: 'company_siren')&.parsed_value %><br>
+      Email : <%= Setting.find_by(key: 'company_email')&.parsed_value %> | Téléphone : <%= Setting.find_by(key: 'company_phone')&.parsed_value %>
+    </div>
+  </div>
+
+  <!-- Destinataire + Détails de facture -->
+  <div class="invoice-top">
+    <div class="recipient">
+      <h2>Destinataire :</h2>
+      <p><%= @client.lastname %> <%= @client.firstname %></p>
+      <p><%= @client.address %></p>
+      <p><%= @client.phone %></p>
+      <p>FRANCE</p>
+    </div>
+    <div class="invoice-details">
+      <h2>Devis : <%= @quote.number %></h2>
+      <p>Date de facture : 28/04/2021</p>
+      <p>Date d'échéance : 05/05/2021</p>
+    </div>
+  </div>
+
+  <!-- Tableau des prestations / items -->
+<table class="items">
+  <thead>
+    <tr>
+      <th>Description</th>
+      <th>Qté</th>
+      <th>PU (HT)</th>
+      <th>Total (HT)</th>
+      <th>TVA</th>
+      <th>Total (TTC)</th>
+    </tr>
+  </thead>
+  <% total_TTC = 0 %>
+  <tbody>
+    <% items_by_category = @quote.items.group_by(&:category) %>
+
+    <% items_by_category.each do |category_name, items_in_cat| %>
+      <!-- Ligne pour afficher la catégorie -->
+      <tr>
+        <td colspan="6" style="background: #f2f2f2;">
+          <strong><%= category_name.presence || "Sans catégorie" %></strong>
+        </td>
+      </tr>
+
+      <% items_in_cat.each do |item| %>
+        <tr>
+          <td><%= item.description %></td>
+          <td><%= item.duration * item.nb_people %></td>
+          <td><%= (item.hourly_cost * (1 + item.human_margin/100)).round(2) %> €</td>
+          <td><%= item.human_total_cost.round(2) %> €</td>
+          <td><%= Setting.find_by(key: 'labor_tva')&.parsed_value %> %</td>
+          <td>
+            <% item_ttc = item.human_total_cost * (1 + (Setting.find_by(key: 'labor_tva')&.parsed_value).to_f / 100) %>
+            <%= item_ttc.round(2) %> €
+          </td>
+          <% total_TTC += item_ttc %>
+        </tr>
+
+        <!-- Matériaux associés -->
+        <% if item.materials.any? %>
+          <% item.materials.each do |mat| %>
+            <tr>
+              <td style="padding-left:30px">• <%= mat.name %></td>
+              <td><%= mat.quantity %></td>
+              <td><%= (mat.unit_price * (1 + mat.margin.to_f/100)).round(2) %> €</td>
+              <td><%= mat.total_price.round(2) %> €</td>
+              <td><%= Setting.find_by(key: 'material_tva')&.parsed_value %> %</td>
+              <td>
+                <% mat_ttc = mat.total_price * (1 + (Setting.find_by(key: 'material_tva')&.parsed_value).to_f / 100) %>
+                <%= mat_ttc.round(2) %> €
+              </td>
+              <% total_TTC += mat_ttc %>
+            </tr>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+  </tbody>
+</table>
+
+
+  <!-- Section Totaux -->
+  <div class="total-section">
+    <p><strong>Montant Total HT :</strong> <%= @quote.total_ht %> €</p>
+    <p><strong>Montant à payer (TTC) :</strong> <%= total_TTC.round(2) %> €</p>
+    <% @quote.total_ttc = total_TTC.round(2) %>
+  </div>
+
+  <!-- Conditions générales -->
+  <div class="conditions">
+    <strong>Conditions générales</strong><br>
+    Sauf mention contraire, un taux de TVA de 20% est appliqué sur l’ensemble des prestations.
+    Le paiement est dû dans un délai de 30 jours à compter de la date de facture.
+    <br><br>
+    Pour tout retard de paiement, des pénalités peuvent être exigées conformément à la législation en vigueur.
+  </div>
+
+  <!-- Pied de page -->
+  <div class="footer">
+    Merci pour votre confiance - <%= Setting.find_by(key: 'company_name')&.parsed_value %>
+  </div>
+
+</body>
+</html>

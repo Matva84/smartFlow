@@ -57,7 +57,7 @@ class Quote < ApplicationRecord
       total_ht = total_items + total_materials
       total_margin = margin_items + margin_materials
 
-      update(total: total_ht, margin: total_margin)
+      update(total_ht: total_ht, margin: total_margin)
   end
 
   private

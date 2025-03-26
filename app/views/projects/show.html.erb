@@ -71,7 +71,7 @@
                   <%= link_to quote.number, quote_path(quote), class: "text-decoration-none" %>
                 </td>
                 <td><%= quote.status %></td>
-                <td><%= number_to_currency(quote.total, unit: "€") %></td>
+                <td><%= number_to_currency(quote.total_ht, unit: "€") %></td>
                 <td><%= l(quote.created_at, format: :short) %></td>
               </tr>
             <% end %>

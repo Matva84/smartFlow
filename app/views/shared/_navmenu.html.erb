@@ -72,6 +72,34 @@
   </li>
 </ul>
 
+<% logo_setting = Setting.find_by(key: "company_logo") %>
+<% website_setting = Setting.find_by(key: "company_website") %>
+
+<% # On récupère la chaîne URL dans website_url, s'il y en a une :
+   website_url = website_setting&.value.to_s %>
+
+<% # Si website_url n’est pas vide, on vérifie la présence du protocole :
+   if website_url.present?
+     unless website_url[%r{\Ahttps?://}] || website_url[%r{\Ahttp://}]
+       website_url = "https://#{website_url}"
+     end
+   end
+%>
+
+<% if logo_setting&.file_upload&.attached? %>
+  <% if website_url.present? %>
+    <%= link_to website_url, target: "_blank" do %>
+      <%= image_tag url_for(logo_setting.file_upload),
+                    alt: "Logo de la société",
+                    style: "max-height: 80px; margin-top:15px;" %>
+    <% end %>
+  <% else %>
+    <%= image_tag url_for(logo_setting.file_upload),
+                  alt: "Logo de la société",
+                  style: "max-height: 80px; margin-top:15px;" %>
+  <% end %>
+<% end %>
+
 
   <div class="nav-lateral-menu-footer">
     <% if user_signed_in? %>

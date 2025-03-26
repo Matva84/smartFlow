@@ -1,18 +1,24 @@
 <% if user_signed_in? && current_user.employee.admin? %>
   <div class="autoflexinline">
     <%= link_to "Retour à la liste des devis", quotes_path, class: "link-buttonQuote" %>
-    <%= link_to "Modifier", edit_quote_path(@quote), class: "link-buttonQuote" %>
-    <%= link_to "Retour à la liste", quotes_path, class: "link-buttonQuote" %>
     <%#= link_to "Supprimer", quote_path(@quote), method: :delete, data: { confirm: "Êtes-vous sûr ?" }, class: "btn btn-danger" %>
-    <%= button_to "Supprimer", quote_path(@quote), method: :delete, data: { confirm: "Êtes-vous sûr ?" } , class: "link-buttonQuote" %>
-    <%= button_to "Dupliquer le devis", duplicate_quote_path(@quote), method: :post, class: "link-buttonQuote" %>
+    <%#= button_to "Supprimer", quote_path(@quote), method: :delete, data: { confirm: "Êtes-vous sûr ?" } , class: "link-buttonQuote" %>
+    <% if @quote.items.any? %>
+      <%= link_to "Actualiser le status", edit_quote_path(@quote), class: "link-buttonQuote" %>
+      <%= button_to "Dupliquer le devis", duplicate_quote_path(@quote), method: :post, class: "link-buttonQuote" %>
+      <%= link_to "Générer le PDF", quote_path(@quote, format: :pdf),target: "_blank",class: "link-buttonQuote" %>
+    <% end %>
+    <% if @quote.status == "Prêt à envoyer" %>
+      <%= link_to "Partager avec le client", duplicate_quote_path(@quote), class: "link-buttonQuote" %>
+     <!--Remplacez share_quote_path(@quote) par la route appropriée pour envoyer ou partager le devis. -->
+    <% end %>
   </div>
 
   <div class="autoflexinline">
     <div class="details formdiv">
       <h1>Devis <%= @quote.number %></h1>
       <p><strong>Statut :</strong> <%= @quote.status %></p>
-      <p><strong>Total :</strong> <%= number_to_currency(@quote.total, unit: "€") %></p>
+      <p><strong>Total (HT) :</strong> <%= number_to_currency(@quote.total_ht, unit: "€") %></p>
       <p><strong>Projet associé :</strong>
         <%= link_to @quote.project.name, project_path(@quote.project) if @quote.project %>
       </p>
@@ -57,9 +63,9 @@
           <%= link_to "#", class: "link-buttonQuote", id: "openModalItem" do %>
               <strong>Ajouter un item</strong>
             <% end %>
-            <p class="price">Total HT : <%= number_to_currency(@quote.total, unit: "€") %></p>
+            <p class="price">Total HT : <%= number_to_currency(@quote.total_ht, unit: "€") %></p>
             <p class="margin">Marge : <%= number_to_currency(@quote.margin, unit: "€") %>
-              (<%= @quote.total.to_f > 0 ? (@quote.margin.to_f / @quote.total.to_f * 100).round(2) : 0 %>%)
+              (<%= @quote.total_ht.to_f > 0 ? (@quote.margin.to_f / @quote.total_ht.to_f * 100).round(2) : 0 %>%)
             </p>
 
       </div>

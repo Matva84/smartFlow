@@ -35,6 +35,18 @@ class QuotesController < ApplicationController
     @quote = Quote.find(params[:id])
     @categories = Item.distinct.pluck(:category).compact
     @descriptions = Item.distinct.pluck(:description).compact
+    @client = @quote.project.client
+
+    Rails.logger.info "Templates dans quotes : #{Dir[Rails.root.join('app/views/quotes/*')].join(', ')}"
+
+    respond_to do |format|
+      format.html
+      format.pdf do
+        render pdf: "Devis_#{@quote.number}",
+               template: "quotes/show_pdf",   # Rails cherchera automatiquement "show_pdf.pdf.erb"
+               disposition: 'inline'          # 'inline' pour afficher dans le navigateur, 'attachment' pour le téléchargement
+      end
+    end
   end
 
   def new

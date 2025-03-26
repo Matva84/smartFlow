@@ -13,6 +13,10 @@ class SettingsController < ApplicationController
       if setting.value_type == "boolean"
         # On convertit la valeur reçue en booléen
         setting.update(value: ActiveModel::Type::Boolean.new.cast(new_value).to_s)
+      elsif setting.value_type == "file"
+          if new_value.is_a?(ActionDispatch::Http::UploadedFile)
+            setting.file_upload.attach(new_value)
+          end
       else
         setting.update(value: new_value)
       end
